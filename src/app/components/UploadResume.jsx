@@ -1,13 +1,16 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { BackArrowIcon, CloudUploadIcon, FileAddIcon } from "@/lib/icons";
+import { BackArrowIcon, CloudUploadIcon, FileAddIcon, FileCancelIcon } from "@/lib/icons";
+
 
 export default function UploadResume() {
     const [file, setFile] = useState(null);
     const [dragActive, setDragActive] = useState(false);
+    const [isFileSelected, setIsFileSelected] = useState(false);
     const [candidateName, setCandidateName] = useState("");
     const fileInputRef = useRef(null);
+
 
     const handleFile = (files) => {
         if (!files || files.length === 0) return;
@@ -24,6 +27,7 @@ export default function UploadResume() {
         }
 
         setFile(selected);
+        setIsFileSelected(true)
         console.log("File uploaded:", selected);
     };
 
@@ -62,21 +66,35 @@ export default function UploadResume() {
         console.log("Submitting:", { candidateName, file });
     };
 
+    const handleCancelFileSelected = () => {
+        setFile(null)
+        setIsFileSelected(false)
+    }
+
     return (
         <div>
             {/* Header */}
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Manage Resumes</h2>
-                <button
-                    onClick={triggerFileInput}
-                    className="flex items-center gap-2 bg-cyan-800 px-4 py-2 rounded-md cursor-pointer hover:bg-cyan-700 transition-colors duration-150 ease-in-out"
-                >
-                    <FileAddIcon /> Upload Resume
-                </button>
+                {isFileSelected ? (
+                    <button
+                    onClick={handleCancelFileSelected}
+                     className="flex items-center gap-2 bg-red-800 px-4 py-2 rounded-md cursor-pointer hover:bg-red-700 transition-colors duration-150 ease-in-out">
+                       <FileCancelIcon /> Cancel
+                    </button>
+                ) : (
+                    <button
+                        onClick={triggerFileInput}
+                        className="flex items-center gap-2 bg-cyan-800 px-4 py-2 rounded-md cursor-pointer hover:bg-cyan-700 transition-colors duration-150 ease-in-out"
+                    >
+                        <FileAddIcon /> Upload Resume
+                    </button>
+                )}
+
             </div>
 
             {/* If file is selected, show preview + form */}
-            {file ? (
+            {isFileSelected ? (
                 <form
                     onSubmit={handleSubmit}
                     className="mt-8 flex flex-col justify-center items-center gap-4 border border-white/20 w-full bg-[#191919] p-6 rounded-md"
@@ -94,8 +112,10 @@ export default function UploadResume() {
                         />
                     </div>
                     <div className=" flex gap-2 items-center">
-                        <button className="bg-red-600/60 px-4 py-2 rounded-md font-bold hover:bg-red-700 transition-colors duration-150 ease-in-out cursor-pointer flex items-center gap-1">
-                            <BackArrowIcon className=" text-xl"/> Go back
+                        <button
+                            onClick={handleCancelFileSelected}
+                            className="bg-red-600/60 px-4 py-2 rounded-md font-bold hover:bg-red-700 transition-colors duration-150 ease-in-out cursor-pointer flex items-center gap-1">
+                            <BackArrowIcon className=" text-xl" /> Go back
                         </button>
                         <button
                             type="submit"
