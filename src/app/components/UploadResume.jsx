@@ -3,6 +3,8 @@
 import { useRef, useState } from "react";
 import { BackArrowIcon, CloudUploadIcon, FileAddIcon, FileCancelIcon } from "@/lib/icons";
 
+import { toast } from "react-toastify";
+
 
 export default function UploadResume() {
     const [file, setFile] = useState(null);
@@ -58,11 +60,11 @@ export default function UploadResume() {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!file || !candidateName.trim()) {
-            alert("Please select a file and enter candidate name");
+            toast.warn("Please enter candidate name")
             return;
         }
 
-        // TODO: send file + candidateName to your API
+        // TODO: send file + candidateName to database
         console.log("Submitting:", { candidateName, file });
     };
 
@@ -74,13 +76,13 @@ export default function UploadResume() {
     return (
         <div>
             {/* Header */}
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-baseline sm:items-center">
                 <h2 className="text-2xl font-bold">Manage Resumes</h2>
                 {isFileSelected ? (
                     <button
-                    onClick={handleCancelFileSelected}
-                     className="flex items-center gap-2 bg-red-800 px-4 py-2 rounded-md cursor-pointer hover:bg-red-700 transition-colors duration-150 ease-in-out">
-                       <FileCancelIcon /> Cancel
+                        onClick={handleCancelFileSelected}
+                        className="flex items-center gap-2 bg-red-800 px-4 py-2 rounded-md cursor-pointer hover:bg-red-700 transition-colors duration-150 ease-in-out">
+                        <FileCancelIcon /> Cancel
                     </button>
                 ) : (
                     <button
@@ -97,9 +99,9 @@ export default function UploadResume() {
             {isFileSelected ? (
                 <form
                     onSubmit={handleSubmit}
-                    className="mt-8 flex flex-col justify-center items-center gap-4 border border-white/20 w-full bg-[#191919] p-6 rounded-md"
+                    className="mt-8 flex flex-col justify-center items-center gap-4 border border-white/20 w-full bg-[#191919] px-6 py-15 rounded-md"
                 >
-                    <div className="text-green-400 text-sm">
+                    <div className="text-green-400 text-sm text-center">
                         Selected File: <b>{file.name}</b>
                     </div>
                     <div className=" w-full max-w-[576px]">
@@ -129,7 +131,7 @@ export default function UploadResume() {
             ) : (
                 // Else show drag-drop area
                 <div
-                    className={`mt-8 flex justify-center items-center flex-col gap-1 border-3 border-dashed w-full bg-[#191919] py-15 rounded-md ${dragActive ? "border-cyan-500" : "border-white/20"
+                    className={`mt-8 flex justify-center items-center flex-col gap-1 border-3 border-dashed w-full bg-[#191919] px-6 py-15 rounded-md ${dragActive ? "border-cyan-500" : "border-white/20"
                         }`}
                     onDragEnter={handleDrag}
                     onDragOver={handleDrag}
@@ -138,10 +140,12 @@ export default function UploadResume() {
                     onClick={triggerFileInput}
                 >
                     <CloudUploadIcon className="text-white/60 text-5xl mb-6" />
-                    <p className="font-bold">
-                        Drag and drop your resume or click to upload
-                    </p>
-                    <p className="text-sm opacity-80">Supported formats: PDF, DOCX</p>
+                    <div className=" flex flex-col gap-1">
+                        <p className="font-bold text-center">
+                            Drag and drop your resume or click to upload
+                        </p>
+                        <p className="text-sm opacity-80 text-center">Supported formats: PDF, DOCX</p>
+                    </div>
                     <button
                         onClick={triggerFileInput}
                         type="button"
