@@ -1,7 +1,9 @@
+import UploadResume from "./components/UploadResume";
+
 export default function Home () {
     return (
-        <>
-            <h1>Home page</h1>
-        </>
+        <div className="flex flex-col gap-4 px-20 py-10">
+            <UploadResume />
+        </div>
     )
 }
