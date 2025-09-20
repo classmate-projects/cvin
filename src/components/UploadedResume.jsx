@@ -1,5 +1,6 @@
 "use client";
 
+import { DeleteIcon, EyeIcon, FileDocxIcon, FilePdfIcon, PrintIcon } from "@/lib/icons";
 import { useEffect, useState } from "react";
 
 export default function UploadedResume() {
@@ -13,7 +14,6 @@ export default function UploadedResume() {
             const res = await fetch(`/api/resumes?page=${pageNum}`);
             const data = await res.json();
 
-            // Defensive checks
             setResumes(Array.isArray(data.resumes) ? data.resumes : []);
             setHasMore(Boolean(data.hasMore));
         } catch (err) {
@@ -26,7 +26,7 @@ export default function UploadedResume() {
     useEffect(() => {
         fetchResumes(page);
 
-        // Poll every 5s for realtime updates
+        // Optional: polling every 5s
         const interval = setInterval(() => {
             fetchResumes(page);
         }, 5000);
@@ -34,14 +34,8 @@ export default function UploadedResume() {
         return () => clearInterval(interval);
     }, [page]);
 
-    const handlePreview = (id) => {
-        window.open(`/api/resumes/${id}/preview`, "_blank");
-    };
-
-    const handlePrint = (id) => {
-        window.open(`/api/resumes/${id}/print`, "_blank");
-    };
-
+    const handlePreview = (id) => window.open(`/api/resumes/${id}/preview`, "_blank");
+    const handlePrint = (id) => window.open(`/api/resumes/${id}/print`, "_blank");
     const handleDelete = async (id) => {
         if (confirm("Delete this resume?")) {
             try {
@@ -55,9 +49,9 @@ export default function UploadedResume() {
 
     return (
         <div className="mt-6">
-            <table className="w-full border-white/70 rounded-xl overflow-hidden">
+            <table className="w-full table-auto border-collapse border border-white/30 rounded-xl overflow-hidden">
                 <thead>
-                    <tr className="bg-[#333] text-left">
+                    <tr className="bg-[#333] text-white text-center">
                         <th className="py-3 px-4">Candidate Name</th>
                         <th className="py-3 px-4">Uploaded Date</th>
                         <th className="py-3 px-4">File Type</th>
@@ -67,33 +61,48 @@ export default function UploadedResume() {
                 <tbody>
                     {resumes.length > 0 ? (
                         resumes.map((resume) => (
-                            <tr key={resume.resume_id} className="border-t border-white/20">
-                                <td className="py-2 px-4">{resume.candidate_name}</td>
+                            <tr key={resume.resume_id} className="border-t border-white/20 text-center h-[60px]">
+                                <td className="py-2 px-4 capitalize">{resume.candidate_name}</td>
                                 <td className="py-2 px-4">
                                     {resume.created_at
                                         ? new Date(resume.created_at).toLocaleString()
                                         : "—"}
                                 </td>
-                                <td className="py-2 px-4">{resume.file_type || "Unknown"}</td>
-                                <td className="py-2 px-4 space-x-2">
-                                    <button
-                                        onClick={() => handlePreview(resume.resume_id)}
-                                        className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm"
-                                    >
-                                        Preview
-                                    </button>
-                                    <button
-                                        onClick={() => handlePrint(resume.resume_id)}
-                                        className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm"
-                                    >
-                                        Print
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(resume.resume_id)}
-                                        className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm"
-                                    >
-                                        Delete
-                                    </button>
+                                <td className="py-2 px-4">
+                                    <div className="flex justify-center">
+                                        {resume.file_type === "pdf" ? (
+                                            <span className="flex items-center gap-1 bg-cyan-400/20 text-cyan-500 font-semibold px-2 py-1.5 rounded-full">
+                                                <FilePdfIcon /> PDF
+                                            </span>
+                                        ) : (
+                                            <span className="flex items-center gap-1 bg-blue-400/20 text-blue-500 font-semibold px-2 py-1.5 rounded-full">
+                                                <FileDocxIcon /> DOCX
+                                            </span>
+                                        )}
+                                    </div>
+                                </td>
+
+                                <td className="py-2 px-4">
+                                    <div className="flex justify-center items-center gap-4">
+                                        <button
+                                            onClick={() => handlePreview(resume.resume_id)}
+                                            className="text-white/70 hover:text-white text-xl cursor-pointer"
+                                        >
+                                            <EyeIcon />
+                                        </button>
+                                        <button
+                                            onClick={() => handlePrint(resume.resume_id)}
+                                            className="text-white/70 hover:text-white text-xl cursor-pointer"
+                                        >
+                                            <PrintIcon />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(resume.resume_id)}
+                                            className="text-red-500 hover:text-red-700 text-xl cursor-pointer"
+                                        >
+                                            <DeleteIcon />
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))
