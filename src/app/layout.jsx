@@ -27,7 +27,7 @@ export default function RootLayout({ children }) {
       >
         <div className="h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden">
           <Navbar />
-          <div className=" overflow-y-scroll">
+          <div className=" overflow-y-scroll scrollbar-hide">
             {children}
             <ToastContainer
               position="top-right"
