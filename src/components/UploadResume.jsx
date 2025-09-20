@@ -57,16 +57,44 @@ export default function UploadResume() {
         fileInputRef.current.click();
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!file || !candidateName.trim()) {
-            toast.warn("Please enter candidate name")
+
+        if (!file) {
+            toast.warn("Please select a file.")
             return;
         }
 
-        // TODO: send file + candidateName to database
-        console.log("Submitting:", { candidateName, file });
+        if (!candidateName.trim()) {
+            toast.warn("Please enter candidate name");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("candidate_name", candidateName);
+        formData.append("resume_file", file);
+
+        try {
+            const res = await fetch("/api/upload", {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                toast.success("Resume uploaded successfully!");
+                setFile(null);
+                setCandidateName("");
+                setIsFileSelected(false);
+            } else {
+                toast.error(data.message || "Upload failed");
+            }
+        } catch (error) {
+            console.error("Upload error:", error);
+            toast.error("Something went wrong");
+        }
     };
+
 
     const handleCancelFileSelected = () => {
         setFile(null)

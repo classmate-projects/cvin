@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/Navbar";
+import Navbar from "../components/Navbar";
 import { ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -25,16 +25,20 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-        {children}
-        <ToastContainer 
-        position="top-right" 
-        autoClose={1500}
-        hideProgressBar={true}
-        newestOnTop={true}
-        pauseOnHover={true}
-        transition={Zoom}
-        />
+        <div className="h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden">
+          <Navbar />
+          <div className=" overflow-y-scroll">
+            {children}
+            <ToastContainer
+              position="top-right"
+              autoClose={1500}
+              hideProgressBar={true}
+              newestOnTop={true}
+              pauseOnHover={true}
+              transition={Zoom}
+            />
+          </div>
+        </div>
       </body>
     </html>
   );
