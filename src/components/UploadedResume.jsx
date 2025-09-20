@@ -39,18 +39,6 @@ export default function UploadedResume() {
 
     const handlePreview = (id) => window.open(`/api/resumes/${id}/preview`, "_blank");
     const handlePrint = (id) => window.open(`/api/resumes/${id}/print`, "_blank");
-    const handleDelete = async (id) => {
-        // if (confirm("Delete this resume?")) {
-        //     try {
-        //         await fetch(`/api/resumes/${id}`, { method: "DELETE" });
-        //         fetchResumes(page);
-        //     } catch (err) {
-        //         console.error("Error deleting resume:", err);
-        //     }
-        // }
-
-        <ConfirmDelete />
-    };
 
     return (
         <>
@@ -85,11 +73,19 @@ export default function UploadedResume() {
                             resumes.map((resume) => (
                                 <tr key={resume.resume_id} className="border-t border-white/20 text-center h-[60px]">
                                     <td className="py-2 px-4 capitalize">{resume.candidate_name}</td>
-                                    <td className="py-2 px-4">
+                                    <td className="py-2 px-4 uppercase">
                                         {resume.created_at
-                                            ? new Date(resume.created_at).toLocaleString()
+                                            ? new Date(resume.created_at).toLocaleString("en-GB", {
+                                                hour: "numeric",
+                                                minute: "numeric",
+                                                hour12: true,
+                                            }) +
+                                            ", " +
+                                            new Date(resume.created_at).toLocaleDateString("en-GB")
+                                                .replaceAll("/", "-")
                                             : "—"}
                                     </td>
+
                                     <td className="py-2 px-4">
                                         <div className="flex justify-center">
                                             {resume.file_type === "pdf" ? (
