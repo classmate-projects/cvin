@@ -1,8 +1,10 @@
 "use client";
 
-import { DeleteIcon, EyeIcon, FileDocxIcon, FilePdfIcon, PrintIcon } from "@/lib/icons";
+import { DeleteIcon, EmptyIcon, EyeIcon, FileDocxIcon, FilePdfIcon, PrintIcon, ToLeftArrowIcon, ToRightArrowIcon } from "@/lib/icons";
+
 import { useEffect, useState } from "react";
 import ConfirmDelete from "./ConfirmDelete";
+import { toast } from "react-toastify";
 
 export default function UploadedResume() {
     const [resumes, setResumes] = useState([]);
@@ -49,8 +51,10 @@ export default function UploadedResume() {
                         try {
                             await fetch(`/api/resumes/${deleteTarget.id}`, { method: "DELETE" });
                             fetchResumes(page);
+                            toast.success("File Deleted")
                         } catch (err) {
                             console.error("Error deleting resume:", err);
+                            toast.error("Failed to delete")
                         }
                         setDeleteTarget(null); // close modal
                     }}
@@ -58,10 +62,10 @@ export default function UploadedResume() {
                 />
             )}
 
-            <div className="mt-6">
+            <div className="mt-6 border border-white/10 rounded-xl overflow-hidden">
                 <table className="w-full table-auto border-collapse border border-white/30 rounded-xl overflow-hidden">
                     <thead>
-                        <tr className="bg-[#333] text-white text-center">
+                        <tr className="bg-[#333] text-gray-300 font-extralight text-center">
                             <th className="py-3 px-4">Candidate Name</th>
                             <th className="py-3 px-4">Uploaded Date</th>
                             <th className="py-3 px-4">File Type</th>
@@ -127,7 +131,11 @@ export default function UploadedResume() {
                         ) : (
                             <tr>
                                 <td className="py-4 px-4 text-center" colSpan={4}>
-                                    No resumes uploaded
+                                    <span className=" flex flex-col gap-1 items-center justify-center pt-4 text-white/70">
+                                        <EmptyIcon className=" text-6xl"/>
+                                        <p>No resumes uploaded</p>
+
+                                    </span>
                                 </td>
                             </tr>
                         )}
@@ -139,16 +147,16 @@ export default function UploadedResume() {
                     <button
                         disabled={page === 1}
                         onClick={() => setPage((p) => p - 1)}
-                        className="px-4 py-2 bg-gray-700 rounded disabled:opacity-50"
+                        className="px-4 py-2 bg-gray-700 rounded flex gap-1 items-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Back
+                        <ToLeftArrowIcon /> Back
                     </button>
                     <button
                         disabled={!hasMore}
                         onClick={() => setPage((p) => p + 1)}
-                        className="px-4 py-2 bg-gray-700 rounded disabled:opacity-50"
+                        className="px-4 py-2 bg-gray-700 rounded flex gap-1 items-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Next
+                        Next <ToRightArrowIcon />
                     </button>
                 </div>
             </div>

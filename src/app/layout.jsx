@@ -35,7 +35,6 @@ export default function RootLayout({ children }) {
               hideProgressBar={true}
               newestOnTop={true}
               pauseOnHover={true}
-              transition={Zoom}
             />
           </div>
         </div>
