@@ -24,13 +24,13 @@ export default function UploadResume() {
 
         const selected = files[0];
         if (!allowed.includes(selected.type)) {
-            alert("Only PDF and DOCX files are allowed!");
+            toast.warn("Only PDF and DOCX files are allowed");
             return;
         }
 
         setFile(selected);
         setIsFileSelected(true)
-        console.log("File uploaded:", selected);
+        // console.log("File uploaded:", selected);
     };
 
     const handleDrag = (e) => {
@@ -143,15 +143,15 @@ export default function UploadResume() {
                     </div>
                     <div className=" flex gap-2 items-center">
                         <button
-                            onClick={handleCancelFileSelected}
-                            className="bg-red-600/60 px-4 py-2 rounded-md font-bold hover:bg-red-700 transition-colors duration-150 ease-in-out cursor-pointer flex items-center gap-1">
-                            <BackArrowIcon className=" text-xl" /> Go back
-                        </button>
-                        <button
                             type="submit"
                             className="bg-cyan-800 px-4 py-2 rounded-md font-bold hover:bg-cyan-700 transition-colors duration-150 ease-in-out cursor-pointer"
                         >
                             Submit
+                        </button>
+                        <button
+                            onClick={handleCancelFileSelected}
+                            className="bg-red-600/60 px-4 py-2 rounded-md font-bold hover:bg-red-700 transition-colors duration-150 ease-in-out cursor-pointer flex items-center gap-1">
+                            <BackArrowIcon className=" text-xl" /> Go back
                         </button>
                     </div>
 
@@ -159,7 +159,7 @@ export default function UploadResume() {
             ) : (
                 // Else show drag-drop area
                 <div
-                    className={`mt-8 flex justify-center items-center flex-col gap-1 border-3 border-dashed w-full bg-[#191919] px-6 py-15 rounded-md ${dragActive ? "border-cyan-500" : "border-white/20"
+                    className={`mt-8 flex justify-center items-center cursor-pointer flex-col gap-1 border-3 border-dashed w-full bg-[#191919] px-6 py-15 rounded-md ${dragActive ? "border-cyan-500" : "border-white/20"
                         }`}
                     onDragEnter={handleDrag}
                     onDragOver={handleDrag}
@@ -174,13 +174,11 @@ export default function UploadResume() {
                         </p>
                         <p className="text-sm opacity-80 text-center">Supported formats: PDF, DOCX</p>
                     </div>
-                    <button
-                        onClick={triggerFileInput}
-                        type="button"
+                    <span
                         className="bg-gray-500/50 cursor-pointer mt-6 px-4 py-2 rounded-md text-cyan-600 font-bold"
                     >
                         Browse Files
-                    </button>
+                    </span>
                     <input
                         type="file"
                         accept=".pdf,.docx"
