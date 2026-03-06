@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import ThemeToggle from "@/components/ThemeToggle";
 import { cookies } from "next/headers";
 import LogoutButton from "@/components/LogoutButton";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,7 +49,8 @@ export default async function RootLayout({ children }) {
                   </div>
                   <div className="flex items-center gap-6">
                     {/* Active Concurrent User Nodes */}
-                    <div className="flex -space-x-2 relative group cursor-pointer" title={`Active Sessions: ${activeSessions.length}`}>
+                    <Link href={"/profile"}
+                     className="flex -space-x-2 relative group cursor-pointer" title={`Active Sessions: ${activeSessions.length}`}>
                       {activeSessions.map((user, idx) => (
                         <div key={user.id} className="relative z-[1] hover:z-10 transition-transform hover:scale-110">
                           <img
@@ -59,7 +61,7 @@ export default async function RootLayout({ children }) {
                           <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-[#111111] rounded-full"></span>
                         </div>
                       ))}
-                    </div>
+                    </Link>
                     <div className="w-px h-6 bg-slate-100 dark:bg-white/10"></div>
                     <ThemeToggle />
                     <button className="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors p-2 text-xl" title="Notifications">🔔</button>

@@ -1,5 +1,7 @@
 "use client";
 
+import { greetings } from "@/lib/greetings";
+
 import { useEffect, useState } from "react";
 import UploadedResume from "@/components/UploadedResume";
 import Link from "next/link";
@@ -50,7 +52,7 @@ export default function Dashboard() {
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight transition-colors">
-                        Welcome Back, {user.name} 👋
+                        {greetings()}, {user.name} 👋
                     </h1>
                     <p className="text-sm text-slate-500 dark:text-gray-400 font-medium transition-colors">Your resume pool is growing. Let's find your next top talent!</p>
                 </div>
