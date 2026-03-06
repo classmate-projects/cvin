@@ -126,7 +126,7 @@ function KPICard({ icon, iconBg, value, label, trend, trendColor }) {
                     {icon}
                 </div>
                 <button className="p-1 text-slate-300 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                    <FiMoreVertical />
+                    {/* <FiMoreVertical /> */}
                 </button>
             </div>
             <div>
