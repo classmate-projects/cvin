@@ -59,7 +59,7 @@ export default function Sidebar() {
             </div>
 
             {/* Global Search Interface */}
-            <div className="relative mb-8 group transition-colors">
+            {/* <div className="relative mb-8 group transition-colors">
                 <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none group-focus-within:text-[#00845a] dark:group-focus-within:text-[#00b37a]">
                     <SearchIcon className="text-slate-400 text-sm transition-colors" />
                 </div>
@@ -69,7 +69,7 @@ export default function Sidebar() {
                     className="w-full bg-slate-50 dark:bg-[#1a1a1a] border-none rounded-xl pl-10 py-2.5 text-xs text-slate-700 dark:text-gray-300 focus:ring-2 focus:ring-[#00845a]/20 dark:focus:ring-[#00b37a]/20 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-gray-500"
                 />
                 <span className="absolute right-3 inset-y-0 flex items-center text-[10px] bg-white dark:bg-[#252525] border border-slate-100 dark:border-white/10 px-1 rounded h-5 my-auto text-slate-400 dark:text-gray-500 font-mono transition-colors">⌘K</span>
-            </div>
+            </div> */}
 
             {/* Navigation Menus */}
             <div className="flex-1 space-y-8 overflow-y-auto scrollbar-hide">
