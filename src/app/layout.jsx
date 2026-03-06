@@ -64,7 +64,7 @@ export default async function RootLayout({ children }) {
                     </Link>
                     <div className="w-px h-6 bg-slate-100 dark:bg-white/10"></div>
                     <ThemeToggle />
-                    <button className="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors p-2 text-xl" title="Notifications">🔔</button>
+                    {/* <button className="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors p-2 text-xl" title="Notifications">🔔</button> */}
                     <LogoutButton />
                   </div>
                 </header>
