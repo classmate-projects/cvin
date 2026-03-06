@@ -55,9 +55,9 @@ export default function Dashboard() {
                     <p className="text-sm text-slate-500 dark:text-gray-400 font-medium transition-colors">Your resume pool is growing. Let's find your next top talent!</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 px-4 py-2.5 rounded-xl shadow-sm text-xs font-bold text-slate-600 dark:text-gray-300 transition-colors">
+                    {/* <div className="flex items-center gap-2 bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 px-4 py-2.5 rounded-xl shadow-sm text-xs font-bold text-slate-600 dark:text-gray-300 transition-colors">
                         <FiCalendar className="text-slate-400 dark:text-gray-500" /> 1 Nov - 7 Nov 2024
-                    </div>
+                    </div> */}
                     <Link
                         href="/upload"
                         className="flex items-center gap-2 bg-[#00845a] hover:bg-[#006e4a] text-white px-6 py-2.5 rounded-xl shadow-lg shadow-[#00845a]/20 transition-all font-bold active:scale-95 translate-y-0.5 group tracking-wide"
