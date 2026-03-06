@@ -49,12 +49,12 @@ export default function Dashboard() {
     return (
         <div className="max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-500">
             {/* Page Header Area */}
-            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight transition-colors">
                         {greetings()}, {user.name} 👋
                     </h1>
-                    <p className="text-sm text-slate-500 dark:text-gray-400 font-medium transition-colors">Your resume pool is growing. Let's find your next top talent!</p>
+                    <p className="text-xs md:text-sm text-slate-500 dark:text-gray-400 font-medium transition-colors">Your resume pool is growing. Let's find your next top talent!</p>
                 </div>
                 <div className="flex items-center gap-3">
                     {/* <div className="flex items-center gap-2 bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 px-4 py-2.5 rounded-xl shadow-sm text-xs font-bold text-slate-600 dark:text-gray-300 transition-colors">
@@ -62,7 +62,7 @@ export default function Dashboard() {
                     </div> */}
                     <Link
                         href="/upload"
-                        className="flex items-center gap-2 bg-[#00845a] hover:bg-[#006e4a] text-white px-6 py-2.5 rounded-xl shadow-lg shadow-[#00845a]/20 transition-all font-bold active:scale-95 translate-y-0.5 group tracking-wide"
+                        className="flex items-center justify-center gap-2 bg-[#00845a] hover:bg-[#006e4a] text-white px-6 py-2.5 rounded-xl shadow-lg shadow-[#00845a]/20 transition-all font-bold active:scale-95 group tracking-wide"
                     >
                         <FiPlus className="text-lg group-hover:rotate-90 transition-transform" />
                         Add New

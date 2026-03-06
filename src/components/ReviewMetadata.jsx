@@ -39,19 +39,19 @@ export default function ReviewMetadata({ metadata, onConfirm, onCancel, isSubmit
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-slate-900/60 dark:bg-black/80 z-[100] backdrop-blur-sm p-4 overflow-y-auto selection:bg-[#00845a]/10 selection:text-[#00845a] transition-colors">
-            <div className="bg-white dark:bg-[#111111] rounded-[2.5rem] w-full max-w-3xl p-10 shadow-2xl my-auto animate-in zoom-in-95 fade-in duration-300 relative overflow-hidden border border-white dark:border-white/5 transition-colors">
+            <div className="bg-white dark:bg-[#111111] rounded-[2rem] md:rounded-[2.5rem] w-full max-w-3xl p-6 md:p-10 shadow-2xl my-auto animate-in zoom-in-95 fade-in duration-300 relative overflow-hidden border border-white dark:border-white/5 transition-colors">
 
                 {/* Visual Header Accent */}
                 <div className="absolute top-0 right-0 p-8 opacity-[0.03] dark:opacity-[0.05] pointer-events-none transition-opacity">
                     <FiCheckCircle className="text-[180px] text-[#00845a] dark:text-[#00b37a]" />
                 </div>
 
-                <div className="relative z-10 space-y-2 mb-10">
+                <div className="relative z-10 space-y-2 mb-8 md:mb-10">
                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 dark:bg-[#00b37a]/10 text-[#00845a] dark:text-[#00b37a] rounded-lg text-[10px] font-black uppercase tracking-widest border border-emerald-100 dark:border-[#00b37a]/20 transition-colors">
                         Neural Verification Active
                     </div>
-                    <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">Confirm Identity Profile</h2>
-                    <p className="text-sm text-slate-400 dark:text-gray-400 font-medium transition-colors">Verify the AI-extracted metadata before indexing the talent profile.</p>
+                    <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">Confirm Identity Profile</h2>
+                    <p className="text-xs md:text-sm text-slate-400 dark:text-gray-400 font-medium transition-colors">Verify the AI-extracted metadata before indexing the talent profile.</p>
                 </div>
 
                 <form onSubmit={(e) => { e.preventDefault(); onConfirm(formData); }} className="space-y-6 relative z-10">
@@ -156,7 +156,7 @@ export default function ReviewMetadata({ metadata, onConfirm, onCancel, isSubmit
                     </div>
 
                     {/* CTA Primary and Secondary Buttons */}
-                    <div className="flex gap-4 pt-8">
+                    <div className="flex flex-col md:flex-row gap-4 pt-6 md:pt-8 w-full">
                         <button
                             type="submit"
                             disabled={isSubmitting}
