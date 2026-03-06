@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
     DashboardIcon,
@@ -21,6 +22,24 @@ import {
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const [user, setUser] = useState({
+        name: "Loading Session...",
+        email: "...",
+        avatar: "https://ui-avatars.com/api/?name=Auth&background=00845a&color=fff"
+    });
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const res = await fetch("/api/auth/me");
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.user) setUser(data.user);
+                }
+            } catch (err) { }
+        };
+        fetchUser();
+    }, []);
 
     const isActive = (path) => pathname === path;
 
@@ -64,30 +83,14 @@ export default function Sidebar() {
                             href="/"
                             active={isActive("/")}
                         />
-                        <SidebarItem
-                            icon={<FiCheckSquare />}
-                            label="Tasks"
-                            href="/maintenance?service=Tasks"
-                            active={isActive("/maintenance") && typeof window !== 'undefined' && window.location.search.includes("Tasks")}
-                        />
-                        <SidebarItem
-                            icon={<FiFileText />}
-                            label="Notes"
-                            href="/maintenance?service=Notes"
-                            active={isActive("/maintenance") && typeof window !== 'undefined' && window.location.search.includes("Notes")}
-                        />
+
                         <SidebarItem
                             icon={<FiMail />}
                             label="Email"
                             href="/maintenance?service=Email"
                             active={isActive("/maintenance") && typeof window !== 'undefined' && window.location.search.includes("Email")}
                         />
-                        <SidebarItem
-                            icon={<FiCalendar />}
-                            label="Calendar"
-                            href="/maintenance?service=Calendar"
-                            active={isActive("/maintenance") && typeof window !== 'undefined' && window.location.search.includes("Calendar")}
-                        />
+
                     </div>
                 </div>
 
@@ -140,13 +143,13 @@ export default function Sidebar() {
             <div className="pt-6 mt-6 border-t border-slate-100 dark:border-white/5 transition-colors">
                 <div className="flex items-center gap-3 px-2">
                     <img
-                        src="https://ui-avatars.com/api/?name=Wolf+Pixel&background=00845a&color=fff"
+                        src={user.avatar}
                         alt="User Avatar"
                         className="w-10 h-10 rounded-xl"
                     />
                     <div className="flex flex-col text-left">
-                        <span className="text-sm font-bold text-slate-800 dark:text-white transition-colors">Wolf Pixel</span>
-                        <span className="text-[10px] text-slate-400 dark:text-gray-500 font-medium transition-colors">wolf@cvin.app</span>
+                        <span className="text-sm font-bold text-slate-800 dark:text-white transition-colors">{user.name}</span>
+                        <span className="text-[10px] text-slate-400 dark:text-gray-500 font-medium transition-colors">{user.email}</span>
                     </div>
                 </div>
             </div>

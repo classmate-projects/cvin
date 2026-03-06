@@ -1,11 +1,27 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import UploadResume from "@/components/UploadResume";
 import Link from "next/link";
 import { BackArrowIcon, FileAddIcon } from "@/lib/icons";
 import { FiCpu, FiShield, FiUploadCloud } from "react-icons/fi";
 
 export default function UploadPage() {
+    const [aiStatus, setAiStatus] = useState({ checked: false, online: true });
+
+    useEffect(() => {
+        const checkStatus = async () => {
+            try {
+                const res = await fetch("/api/status/ai");
+                const data = await res.json();
+                setAiStatus({ checked: true, online: data.online });
+            } catch (err) {
+                setAiStatus({ checked: true, online: false });
+            }
+        };
+        checkStatus();
+    }, []);
+
     return (
         <div className="max-w-5xl mx-auto space-y-10 pb-20 animate-in fade-in duration-700">
             {/* Page Header */}
@@ -22,12 +38,18 @@ export default function UploadPage() {
                         <p className="text-sm text-slate-500 dark:text-gray-400 font-medium italic transition-colors">Powered by Gemini Visual AI Architecture</p>
                     </div>
                 </div>
-                <div className="hidden lg:flex items-center gap-4 text-[10px] font-black text-[#00845a] dark:text-[#00b37a] uppercase tracking-widest bg-white dark:bg-[#1a1a1a] px-6 py-4 rounded-3xl border border-slate-100 dark:border-white/5 shadow-sm border-l-4 border-l-[#00845a] dark:border-l-[#00b37a] transition-colors">
+                <div className={`hidden lg:flex items-center gap-4 text-[10px] font-black uppercase tracking-widest bg-white dark:bg-[#1a1a1a] px-6 py-4 rounded-3xl border border-slate-100 dark:border-white/5 shadow-sm border-l-4 transition-colors ${aiStatus.online ? 'text-[#00845a] dark:text-[#00b37a] border-l-[#00845a] dark:border-l-[#00b37a]' : 'text-rose-500 border-l-rose-500'}`}>
                     <div className="relative">
-                        <div className="w-2 h-2 bg-[#00845a] dark:bg-[#00b37a] rounded-full animate-ping absolute inset-0"></div>
-                        <div className="w-2 h-2 bg-[#00845a] dark:bg-[#00b37a] rounded-full relative z-10"></div>
+                        {aiStatus.online ? (
+                            <>
+                                <div className="w-2 h-2 bg-[#00845a] dark:bg-[#00b37a] rounded-full animate-ping absolute inset-0"></div>
+                                <div className="w-2 h-2 bg-[#00845a] dark:bg-[#00b37a] rounded-full relative z-10"></div>
+                            </>
+                        ) : (
+                            <div className="w-2 h-2 bg-rose-500 rounded-full relative z-10"></div>
+                        )}
                     </div>
-                    AI Infrastructure Online
+                    {aiStatus.checked ? (aiStatus.online ? "AI Infrastructure Online" : "AI Infrastructure Offline") : "Checking AI Status..."}
                 </div>
             </header>
 
@@ -50,7 +72,7 @@ export default function UploadPage() {
                 </div>
 
                 <div className="relative z-20">
-                    <UploadResume />
+                    <UploadResume aiOnline={aiStatus.online} />
                 </div>
             </div>
 

@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import ReviewMetadata from "./ReviewMetadata";
 import { FiFile, FiLoader, FiZap } from "react-icons/fi";
 
-export default function UploadResume() {
+export default function UploadResume({ aiOnline = true }) {
     const [file, setFile] = useState(null);
     const [dragActive, setDragActive] = useState(false);
     const [analyzing, setAnalyzing] = useState(false);
@@ -27,6 +27,12 @@ export default function UploadResume() {
     };
 
     const handleAnalyze = async (selectedFile) => {
+        if (!aiOnline) {
+            toast.info("AI Infrastructure Offline - Opening manual form");
+            setMetadata({ name: "", email: "", job_title: "", location: "", experience_years: "", visa_status: "", specialization: "" });
+            return;
+        }
+
         setAnalyzing(true);
         const formData = new FormData();
         formData.append("file", selectedFile);
@@ -119,10 +125,10 @@ export default function UploadResume() {
 
                         <div className="space-y-3">
                             <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">
-                                {file ? `Ready: ${file.name}` : "Portal Ingestion Zone"}
+                                {file ? `Ready: ${file.name}` : (aiOnline ? "Portal Ingestion Zone" : "Manual Ingestion Zone")}
                             </h3>
                             <p className="text-sm font-medium text-slate-500 dark:text-gray-400 max-w-xs mx-auto leading-relaxed transition-colors">
-                                {file ? "Verifying file structure for AI sync..." : "Drag and drop your identity document here or browse local storage."}
+                                {file ? (aiOnline ? "Verifying file structure for AI sync..." : "Extracting file details...") : (aiOnline ? "Drag and drop your identity document here or browse local storage." : "AI disconnected. Drag a file here to ingest via manual entry.")}
                             </p>
                         </div>
 

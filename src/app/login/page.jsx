@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { FiLock, FiUser, FiArrowRight } from "react-icons/fi";
+import { FiLock, FiUser, FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
@@ -39,72 +41,76 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden transition-colors selection:bg-[#00845a]/10 selection:text-[#00845a]">
+        <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50 dark:bg-[#070707] transition-colors selection:bg-[#00845a]/20 selection:text-[#00845a]">
+            {/* Rich Background mimicking the reference's atmospheric landscape feel */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#00845a]/10 dark:bg-[#00845a]/20 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen"></div>
+                <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-emerald-500/10 dark:bg-emerald-600/10 rounded-full blur-[150px] mix-blend-multiply dark:mix-blend-screen"></div>
+                <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-teal-400/10 dark:bg-teal-900/10 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen"></div>
+            </div>
 
-            {/* Ambient Background Elements */}
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#00845a]/5 dark:bg-[#00845a]/10 rounded-full blur-[120px] pointer-events-none"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
 
-            <div className="bg-white dark:bg-[#111111] border border-slate-200 dark:border-white/5 p-10 sm:p-14 rounded-[2.5rem] shadow-soft max-w-md w-full relative z-10 animate-in zoom-in-95 fade-in duration-500 transition-colors">
 
-                <div className="text-center mb-10 space-y-3">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-[#00845a] text-white rounded-2xl shadow-lg shadow-[#00845a]/20 mb-4 transition-colors">
-                        <FiLock className="text-3xl" />
-                    </div>
-                    <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">CVin Access</h1>
-                    <p className="text-sm text-slate-500 dark:text-gray-400 font-medium transition-colors">Enter your secure credentials to enter the talent index.</p>
+            {/* Glassmorphism Card */}
+            <div className="w-full max-w-[440px] p-10 sm:p-14 relative z-10 animate-in zoom-in-95 fade-in duration-700">
+                {/* Glass Background Layer */}
+                <div className="absolute inset-0 bg-white/40 dark:bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/60 dark:border-white/10 shadow-2xl -z-10"></div>
+
+
+                <div className="text-center mb-12">
+                    <h1 className="text-5xl font-black text-slate-800 dark:text-white tracking-tight drop-shadow-sm">Login</h1>
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-6">
-                    <div className="space-y-4">
-                        <div className="space-y-1.5">
-                            <label className="text-[10px] text-slate-400 dark:text-gray-500 uppercase font-black tracking-widest px-1 transition-colors">Administrator Handle</label>
-                            <div className="relative group">
-                                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-300 dark:text-gray-600 group-focus-within:text-[#00845a] dark:group-focus-within:text-[#00b37a] transition-colors">
-                                    <FiUser />
-                                </div>
-                                <input
-                                    type="text"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    className="w-full bg-slate-50 dark:bg-[#1a1a1a] border-none rounded-2xl pl-12 pr-4 py-3.5 text-sm text-slate-700 dark:text-gray-200 outline-none ring-2 ring-transparent focus:ring-[#00845a]/20 dark:focus:ring-[#00b37a]/20 transition-all font-bold placeholder:text-slate-300 dark:placeholder:text-gray-600 shadow-inner"
-                                    placeholder="Enter username"
-                                    required
-                                />
-                            </div>
+                <form onSubmit={handleLogin} className="space-y-8">
+                    {/* Username Input - Underline Style */}
+                    <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none text-slate-400 dark:text-gray-500 group-focus-within:text-[#00845a] dark:group-focus-within:text-[#00b37a] transition-colors pb-1">
+                            <FiUser className="text-lg" />
                         </div>
-
-                        <div className="space-y-1.5">
-                            <label className="text-[10px] text-slate-400 dark:text-gray-500 uppercase font-black tracking-widest px-1 transition-colors">Security Key</label>
-                            <div className="relative group">
-                                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-300 dark:text-gray-600 group-focus-within:text-[#00845a] dark:group-focus-within:text-[#00b37a] transition-colors">
-                                    <FiLock />
-                                </div>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full bg-slate-50 dark:bg-[#1a1a1a] border-none rounded-2xl pl-12 pr-4 py-3.5 text-sm text-slate-700 dark:text-gray-200 outline-none ring-2 ring-transparent focus:ring-[#00845a]/20 dark:focus:ring-[#00b37a]/20 transition-all font-bold placeholder:text-slate-300 dark:placeholder:text-gray-600 shadow-inner"
-                                    placeholder="Enter password"
-                                    required
-                                />
-                            </div>
-                        </div>
+                        <input
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className="w-full bg-transparent border-b-2 border-slate-300 dark:border-white/20 pl-8 pr-4 py-2.5 text-base text-slate-800 dark:text-white outline-none focus:border-[#00845a] dark:focus:border-[#00b37a] transition-all placeholder:text-slate-400 dark:placeholder:text-gray-500 font-bold"
+                            placeholder="Email or Username"
+                            required
+                        />
                     </div>
 
+                    {/* Password Input - Underline Style */}
+                    <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none text-slate-400 dark:text-gray-500 group-focus-within:text-[#00845a] dark:group-focus-within:text-[#00b37a] transition-colors pb-1">
+                            <FiLock className="text-lg" />
+                        </div>
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full bg-transparent border-b-2 border-slate-300 dark:border-white/20 pl-8 pr-12 py-2.5 text-base text-slate-800 dark:text-white outline-none focus:border-[#00845a] dark:focus:border-[#00b37a] transition-all placeholder:text-slate-400 dark:placeholder:text-gray-500 font-bold"
+                            placeholder="Password"
+                            required
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-0 right-0 flex items-center text-slate-400 dark:text-gray-500 hover:text-slate-600 dark:hover:text-white transition-colors pb-1"
+                        >
+                            {showPassword ? <FiEye className="text-xl" /> : <FiEyeOff className="text-xl" />}
+                        </button>
+                    </div>
+
+
+
+                    {/* Submit Button */}
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-[#00845a] hover:bg-[#006e4a] dark:bg-[#00845a] dark:hover:bg-[#00b37a] text-white font-black text-xs uppercase tracking-[0.2em] py-4 rounded-2xl transition-all disabled:opacity-50 shadow-xl shadow-[#00845a]/20 dark:shadow-[#00b37a]/10 active:scale-95 flex items-center justify-center gap-2 mt-2"
+                        className="w-full bg-transparent border-2 border-slate-800 dark:border-white text-slate-800 dark:text-white hover:bg-slate-800 dark:hover:bg-white hover:text-white dark:hover:text-black font-black text-sm uppercase tracking-widest py-4 rounded-2xl transition-all disabled:opacity-50 active:scale-95 mt-6 shadow-sm hover:shadow-lg"
                     >
-                        {loading ? "Authenticating..." : <>Secure Login <FiArrowRight /></>}
+                        {loading ? "Authenticating..." : "Login"}
                     </button>
 
-                    <div className="text-center mt-6">
-                        <p className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest transition-colors">
-                            Protected by CVin Neural Sandbox
-                        </p>
-                    </div>
+
                 </form>
             </div>
         </div>
