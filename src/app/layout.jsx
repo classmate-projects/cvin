@@ -42,11 +42,11 @@ export default async function RootLayout({ children }) {
 
               {/* Core Application Content Area */}
               <main className="flex-1 flex flex-col h-full overflow-hidden relative">
-                <header className="h-16 px-8 flex items-center justify-between bg-white dark:bg-[#111111] border-b border-slate-100/50 dark:border-white/5 sticky top-0 z-30 transition-colors duration-300">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">Dashboard Overview</span>
+                <header className="h-16 px-4 md:px-8 flex items-center justify-between bg-white dark:bg-[#111111] border-b border-slate-100/50 dark:border-white/5 sticky top-0 z-30 transition-colors duration-300">
+                  <div className="flex items-center gap-2 pl-12 lg:pl-0">
+                    <span className="text-[10px] md:text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest truncate">Dashboard Overview</span>
                   </div>
-                  <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-4 md:gap-6">
                     {/* Active Concurrent User Nodes */}
                     <div className="flex -space-x-2 relative group cursor-pointer" title={`Active Sessions: ${activeSessions.length}`}>
                       {activeSessions.map((user, idx) => (
@@ -67,7 +67,7 @@ export default async function RootLayout({ children }) {
                   </div>
                 </header>
 
-                <div className="flex-1 overflow-y-auto scrollbar-hide px-8 py-8 bg-[#f8fafc] dark:bg-[#0a0a0a] transition-colors duration-300">
+                <div className="flex-1 overflow-y-auto scrollbar-hide px-4 py-6 md:px-8 md:py-8 bg-[#f8fafc] dark:bg-[#0a0a0a] transition-colors duration-300">
                   {children}
                 </div>
 
