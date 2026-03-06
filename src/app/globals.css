@@ -1,17 +1,29 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
 
-body {
-  background-color: #141414;
-  color: #f4f4f4;
+/* Modern shadows */
+.shadow-soft {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
 }
 
+.dark .shadow-soft {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
 
 /* Hide scrollbar but allow scrolling */
 .scrollbar-hide::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
+  display: none;
 }
+
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE & Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom Utilities */
+@layer utilities {
+  .card-glass {
+    @apply bg-white dark:bg-[#151515] border border-slate-200 dark:border-white/5 rounded-[1.5rem] shadow-sm hover:shadow-md transition-all duration-300;
+  }
 }
