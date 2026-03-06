@@ -24,24 +24,6 @@ import {
 export default function Sidebar() {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
-    const [user, setUser] = useState({
-        name: "Loading Session...",
-        email: "...",
-        avatar: "https://ui-avatars.com/api/?name=Auth&background=00845a&color=fff"
-    });
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const res = await fetch("/api/auth/me");
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.user) setUser(data.user);
-                }
-            } catch (err) { }
-        };
-        fetchUser();
-    }, []);
 
     const isActive = (path) => pathname === path;
 
@@ -82,8 +64,8 @@ export default function Sidebar() {
                     </button>
                 </div>
 
-            {/* Global Search Interface */}
-            {/* <div className="relative mb-8 group transition-colors">
+                {/* Global Search Interface */}
+                {/* <div className="relative mb-8 group transition-colors">
                 <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none group-focus-within:text-[#00845a] dark:group-focus-within:text-[#00b37a]">
                     <SearchIcon className="text-slate-400 text-sm transition-colors" />
                 </div>
@@ -137,14 +119,14 @@ export default function Sidebar() {
                             <SidebarItem
                                 icon={<FiUsers />}
                                 label="Talent Pool"
-                                href="/maintenance?service=Talent%20Pool"
-                                active={isActive("/maintenance") && typeof window !== 'undefined' && window.location.search.includes("Talent")}
+                                href="/talent-pool"
+                                active={isActive("/talent-pool")}
                             />
                             <SidebarItem
                                 icon={<FiUserPlus />}
                                 label="Invite Team"
-                                href="/maintenance?service=Invite%20Team"
-                                active={isActive("/maintenance") && typeof window !== 'undefined' && window.location.search.includes("Invite")}
+                                href="/invite-team"
+                                active={isActive("/invite-team")}
                             />
                         </div>
                     </div>
@@ -163,17 +145,19 @@ export default function Sidebar() {
                     </div>
                 </div>
 
-                {/* Footer / User Profile Summary */}
+                {/* Footer / Active Sessions */}
                 <div className="pt-6 mt-6 border-t border-slate-100 dark:border-white/5 transition-colors">
-                    <div className="flex items-center gap-3 px-2">
-                        <img
-                            src={user.avatar}
-                            alt="User Avatar"
-                            className="w-10 h-10 rounded-xl"
-                        />
-                        <div className="flex flex-col text-left">
-                            <span className="text-sm font-bold text-slate-800 dark:text-white transition-colors">{user.name}</span>
-                            <span className="text-[10px] text-slate-400 dark:text-gray-500 font-medium transition-colors">{user.email}</span>
+                    <div className="flex flex-col gap-3 px-2 mb-2">
+                        <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest transition-colors">Active Sessions</span>
+                        <div className="flex -space-x-2 relative group cursor-pointer" title="Active Sessions: 1">
+                            <div className="relative z-[1] hover:z-10 transition-transform hover:scale-110">
+                                <img
+                                    src="https://ui-avatars.com/api/?name=Auth&background=00845a&color=fff"
+                                    alt="Admin"
+                                    className="w-10 h-10 rounded-full border-2 border-white dark:border-[#111111] ring-2 ring-slate-50 dark:ring-white/5 transition-colors"
+                                />
+                                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-[#111111] rounded-full"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
