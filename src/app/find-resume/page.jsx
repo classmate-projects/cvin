@@ -11,7 +11,9 @@ import {
     ToLeftArrowIcon,
     ToRightArrowIcon,
 } from "@/lib/icons";
-import { FiFilter, FiRefreshCw, FiGrid, FiLayers } from "react-icons/fi";
+import { FiFilter, FiRefreshCw, FiGrid, FiLayers, FiEdit2 } from "react-icons/fi";
+import ConfirmDelete from "@/components/ConfirmDelete";
+import { toast } from "react-toastify";
 
 export default function FindResume() {
     const [resumes, setResumes] = useState([]);
@@ -21,6 +23,10 @@ export default function FindResume() {
     const [sortBy, setSortBy] = useState("created_at");
     const [search, setSearch] = useState("");
     const [config, setConfig] = useState(null);
+
+    // Permission and Interaction State
+    const [currentUser, setCurrentUser] = useState(null);
+    const [deleteTarget, setDeleteTarget] = useState(null);
 
     // Advanced Filters
     const [showAdvanced, setShowAdvanced] = useState(false);
@@ -40,8 +46,19 @@ export default function FindResume() {
         }
     };
 
+    const fetchUser = async () => {
+        try {
+            const res = await fetch("/api/auth/me");
+            if (res.ok) {
+                const data = await res.json();
+                setCurrentUser(data.user);
+            }
+        } catch (err) { }
+    };
+
     useEffect(() => {
         fetchConfig();
+        fetchUser();
     }, []);
 
     const fetchResumes = useCallback(
@@ -95,6 +112,25 @@ export default function FindResume() {
 
     return (
         <div className="max-w-[1600px] mx-auto space-y-8 pb-20 animate-in fade-in duration-500">
+            {deleteTarget && (
+                <ConfirmDelete
+                    candidateName={deleteTarget.name}
+                    onConfirm={async () => {
+                        try {
+                            const res = await fetch(`/api/resumes/${deleteTarget.id}`, { method: "DELETE" });
+                            if (res.ok) {
+                                toast.success("Talent record erased.");
+                                fetchResumes(1); // Reset to page 1 on delete
+                            }
+                        } catch (err) {
+                            toast.error("Deletion failed");
+                        }
+                        setDeleteTarget(null);
+                    }}
+                    onCancel={() => setDeleteTarget(null)}
+                />
+            )}
+
             {/* Header Section */}
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6">
                 <div className="space-y-1">
@@ -274,9 +310,24 @@ export default function FindResume() {
                                                 >
                                                     <EyeIcon className="text-xl" />
                                                 </button>
-                                                <button className="p-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 text-slate-400 dark:text-gray-400 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-500/30 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-2xl transition-all shadow-sm">
-                                                    <DeleteIcon className="text-xl" />
-                                                </button>
+
+                                                {currentUser?.role === 'Admin' && (
+                                                    <button
+                                                        onClick={() => toast.info("Edit module routing not configured yet.")}
+                                                        className="p-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 text-slate-400 dark:text-gray-400 hover:text-blue-500 hover:border-blue-200 dark:hover:border-blue-500/30 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all shadow-sm"
+                                                    >
+                                                        <FiEdit2 className="text-xl" />
+                                                    </button>
+                                                )}
+
+                                                {currentUser?.role !== 'Viewer' && (
+                                                    <button
+                                                        onClick={() => setDeleteTarget({ id: resume.resume_id, name: resume.candidate_name })}
+                                                        className="p-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 text-slate-400 dark:text-gray-400 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-500/30 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-2xl transition-all shadow-sm"
+                                                    >
+                                                        <DeleteIcon className="text-xl" />
+                                                    </button>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>

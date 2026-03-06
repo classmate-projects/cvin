@@ -168,7 +168,6 @@ export default function InviteTeamPage() {
                             >
                                 <option value="Viewer">Viewer (Read Only)</option>
                                 <option value="Recruiter">Recruiter (Read & Write)</option>
-                                <option value="Admin">System Administrator</option>
                             </select>
                         </div>
 
@@ -206,8 +205,8 @@ export default function InviteTeamPage() {
                                             </td>
                                             <td className="py-4 px-4">
                                                 <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md border ${user.role === 'Admin' ? 'bg-rose-50 border-rose-100 text-rose-600 dark:bg-rose-500/10 dark:border-rose-500/20' :
-                                                        user.role === 'Recruiter' ? 'bg-blue-50 border-blue-100 text-blue-600 dark:bg-blue-500/10 dark:border-blue-500/20' :
-                                                            'bg-slate-100 border-slate-200 text-slate-600 dark:bg-white/5 dark:border-white/10 dark:text-gray-400'
+                                                    user.role === 'Recruiter' ? 'bg-blue-50 border-blue-100 text-blue-600 dark:bg-blue-500/10 dark:border-blue-500/20' :
+                                                        'bg-slate-100 border-slate-200 text-slate-600 dark:bg-white/5 dark:border-white/10 dark:text-gray-400'
                                                     }`}>
                                                     {user.role}
                                                 </span>
