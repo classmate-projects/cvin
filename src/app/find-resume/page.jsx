@@ -11,7 +11,9 @@ import {
     ToLeftArrowIcon,
     ToRightArrowIcon,
 } from "@/lib/icons";
-import { FiFilter, FiRefreshCw, FiGrid, FiLayers } from "react-icons/fi";
+import { FiFilter, FiRefreshCw, FiGrid, FiLayers, FiEdit2 } from "react-icons/fi";
+import ConfirmDelete from "@/components/ConfirmDelete";
+import { toast } from "react-toastify";
 
 export default function FindResume() {
     const [resumes, setResumes] = useState([]);
@@ -21,6 +23,10 @@ export default function FindResume() {
     const [sortBy, setSortBy] = useState("created_at");
     const [search, setSearch] = useState("");
     const [config, setConfig] = useState(null);
+
+    // Permission and Interaction State
+    const [currentUser, setCurrentUser] = useState(null);
+    const [deleteTarget, setDeleteTarget] = useState(null);
 
     // Advanced Filters
     const [showAdvanced, setShowAdvanced] = useState(false);
@@ -40,8 +46,19 @@ export default function FindResume() {
         }
     };
 
+    const fetchUser = async () => {
+        try {
+            const res = await fetch("/api/auth/me");
+            if (res.ok) {
+                const data = await res.json();
+                setCurrentUser(data.user);
+            }
+        } catch (err) { }
+    };
+
     useEffect(() => {
         fetchConfig();
+        fetchUser();
     }, []);
 
     const fetchResumes = useCallback(
@@ -95,16 +112,35 @@ export default function FindResume() {
 
     return (
         <div className="max-w-[1600px] mx-auto space-y-8 pb-20 animate-in fade-in duration-500">
+            {deleteTarget && (
+                <ConfirmDelete
+                    candidateName={deleteTarget.name}
+                    onConfirm={async () => {
+                        try {
+                            const res = await fetch(`/api/resumes/${deleteTarget.id}`, { method: "DELETE" });
+                            if (res.ok) {
+                                toast.success("Talent record erased.");
+                                fetchResumes(1); // Reset to page 1 on delete
+                            }
+                        } catch (err) {
+                            toast.error("Deletion failed");
+                        }
+                        setDeleteTarget(null);
+                    }}
+                    onCancel={() => setDeleteTarget(null)}
+                />
+            )}
+
             {/* Header Section */}
-            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight transition-colors">Talent Discovery</h1>
-                    <p className="text-sm text-slate-500 dark:text-gray-400 font-medium transition-colors">Search through {resumes.length}+ scanned talent profiles</p>
+                    <h1 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight transition-colors">Talent Discovery</h1>
+                    <p className="text-xs md:text-sm text-slate-500 dark:text-gray-400 font-medium transition-colors">Search through {resumes.length}+ scanned talent profiles</p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex w-full md:w-auto items-center gap-3">
                     <button
                         onClick={resetFilters}
-                        className="text-xs font-bold text-slate-400 dark:text-gray-400 hover:text-[#00845a] dark:hover:text-[#00b37a] px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 transition-all flex items-center gap-2 bg-white dark:bg-[#1a1a1a]"
+                        className="flex-1 md:flex-none justify-center text-xs font-bold text-slate-400 dark:text-gray-400 hover:text-[#00845a] dark:hover:text-[#00b37a] px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 transition-all flex items-center gap-2 bg-white dark:bg-[#1a1a1a]"
                     >
                         <FiRefreshCw /> Reset Filters
                     </button>
@@ -115,10 +151,10 @@ export default function FindResume() {
             </header>
 
             {/* Premium Filter Box */}
-            <div className="card-glass p-8 bg-white dark:bg-[#151515] space-y-8 transition-colors">
-                <div className="flex flex-col lg:flex-row gap-6">
+            <div className="card-glass p-4 md:p-8 bg-white dark:bg-[#151515] space-y-6 md:space-y-8 transition-colors">
+                <div className="flex flex-col xl:flex-row gap-4 xl:gap-6">
                     {/* Search Bar */}
-                    <div className="flex-1 relative group">
+                    <div className="flex-1 relative group w-full">
                         <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none group-focus-within:text-[#00845a] dark:group-focus-within:text-[#00b37a]">
                             <SearchIcon className="text-slate-400 dark:text-gray-500 text-lg transition-colors" />
                         </div>
@@ -132,11 +168,11 @@ export default function FindResume() {
                     </div>
 
                     {/* Quick Selectors */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 w-full xl:w-auto">
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
-                            className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 text-xs font-bold px-6 py-3.5 rounded-2xl outline-none focus:border-[#00845a] dark:focus:border-[#00b37a] transition-all cursor-pointer shadow-sm min-w-[180px]"
+                            className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 text-xs font-bold px-4 md:px-6 py-3.5 rounded-2xl outline-none focus:border-[#00845a] dark:focus:border-[#00b37a] transition-all cursor-pointer shadow-sm min-w-[150px] md:min-w-[180px] w-full sm:w-auto"
                         >
                             <option value="created_at">Date Added</option>
                             <option value="candidate_name">Full Name</option>
@@ -145,7 +181,7 @@ export default function FindResume() {
 
                         <button
                             onClick={() => setShowAdvanced(!showAdvanced)}
-                            className={`px-6 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all border outline-none group flex items-center gap-2 ${showAdvanced
+                            className={`px-4 md:px-6 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all border outline-none group flex items-center justify-center gap-2 w-full sm:w-auto ${showAdvanced
                                 ? "bg-emerald-50 dark:bg-emerald-500/10 border-[#00845a] dark:border-[#00b37a] text-[#00845a] dark:text-[#00b37a]"
                                 : "bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-white/10 text-slate-400 dark:text-gray-400 hover:border-slate-300 dark:hover:border-white/20 hover:text-slate-600 dark:hover:text-gray-200 shadow-sm"
                                 }`}
@@ -222,96 +258,113 @@ export default function FindResume() {
 
             {/* Results Data Grid */}
             <div className="card-glass overflow-hidden bg-white dark:bg-[#151515] transition-colors p-0">
-                <table className="w-full table-auto border-collapse">
-                    <thead>
-                        <tr className="bg-slate-50/50 dark:bg-[#1a1a1a] text-slate-400 dark:text-gray-500 font-black uppercase tracking-[0.15em] text-[10px] border-b border-slate-100 dark:border-white/5 transition-colors">
-                            <th className="py-5 px-8 text-left">Talent Workspace</th>
-                            <th className="py-5 px-8 text-left">Department / Skills</th>
-                            <th className="py-5 px-8 text-center">Source</th>
-                            <th className="py-5 px-8 text-right">Integrations</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100/60 dark:divide-white/5 transition-colors">
-                        {resumes.length > 0 ? (
-                            resumes.map((resume) => (
-                                <tr key={resume.resume_id} className="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors group">
-                                    <td className="py-6 px-8">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-2xl bg-[#00845a]/5 dark:bg-[#00b37a]/10 text-[#00845a] dark:text-[#00b37a] flex items-center justify-center font-black text-sm group-hover:scale-110 transition-all shadow-sm border border-[#00845a]/10 dark:border-[#00b37a]/20 uppercase">
-                                                {resume.candidate_name?.charAt(0)}
-                                            </div>
-                                            <div>
-                                                <div className="font-black text-slate-800 dark:text-white text-base uppercase tracking-tight group-hover:text-[#00845a] dark:group-hover:text-[#00b37a] transition-colors">{resume.candidate_name}</div>
-                                                <div className="text-[10px] text-slate-400 dark:text-gray-500 font-bold flex items-center gap-2 mt-0.5 transition-colors">
-                                                    <span>{resume.email}</span>
-                                                    <span className="w-1 h-1 bg-slate-200 dark:bg-gray-700 rounded-full transition-colors"></span>
-                                                    <span>Added {new Date(resume.created_at).toLocaleDateString()}</span>
+                <div className="overflow-x-auto">
+                    <table className="w-full table-auto border-collapse min-w-[800px]">
+                        <thead>
+                            <tr className="bg-slate-50/50 dark:bg-[#1a1a1a] text-slate-400 dark:text-gray-500 font-black uppercase tracking-[0.15em] text-[10px] border-b border-slate-100 dark:border-white/5 transition-colors">
+                                <th className="py-5 px-6 md:px-8 text-left">Talent Workspace</th>
+                                <th className="py-5 px-6 md:px-8 text-left">Department / Skills</th>
+                                <th className="py-5 px-6 md:px-8 text-center">Source</th>
+                                <th className="py-5 px-6 md:px-8 text-right">Integrations</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100/60 dark:divide-white/5 transition-colors">
+                            {resumes.length > 0 ? (
+                                resumes.map((resume) => (
+                                    <tr key={resume.resume_id} className="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors group">
+                                        <td className="py-6 px-8">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-2xl bg-[#00845a]/5 dark:bg-[#00b37a]/10 text-[#00845a] dark:text-[#00b37a] flex items-center justify-center font-black text-sm group-hover:scale-110 transition-all shadow-sm border border-[#00845a]/10 dark:border-[#00b37a]/20 uppercase">
+                                                    {resume.candidate_name?.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <div className="font-black text-slate-800 dark:text-white text-base uppercase tracking-tight group-hover:text-[#00845a] dark:group-hover:text-[#00b37a] transition-colors">{resume.candidate_name}</div>
+                                                    <div className="text-[10px] text-slate-400 dark:text-gray-500 font-bold flex items-center gap-2 mt-0.5 transition-colors">
+                                                        <span>{resume.email}</span>
+                                                        <span className="w-1 h-1 bg-slate-200 dark:bg-gray-700 rounded-full transition-colors"></span>
+                                                        <span>Added {new Date(resume.created_at).toLocaleDateString()}</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="py-6 px-8">
-                                        <div className="text-slate-700 dark:text-gray-200 font-black text-xs uppercase tracking-tight transition-colors">{resume.job_title || "Uncategorized"}</div>
-                                        <div className="text-[10px] text-slate-400 dark:text-gray-500 font-medium italic mt-1 line-clamp-1 transition-colors">{resume.location || "Global Remote"}</div>
-                                    </td>
-                                    <td className="py-6 px-8 text-center">
-                                        {resume.file_type?.toLowerCase().includes("pdf") ? (
-                                            <span className="inline-flex items-center gap-1.5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-black px-2.5 py-1 rounded-lg border border-rose-100 dark:border-rose-500/20 shadow-sm transition-colors">
-                                                <FilePdfIcon /> PDF
-                                            </span>
-                                        ) : (
-                                            <span className="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2.5 py-1 rounded-lg border border-blue-100 dark:border-blue-500/20 shadow-sm transition-colors">
-                                                <FileDocxIcon /> DOCX
-                                            </span>
-                                        )}
-                                    </td>
-                                    <td className="py-6 px-8 text-right">
-                                        <div className="flex justify-end items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button
-                                                onClick={() => window.open(`/api/resumes/${resume.resume_id}/preview`, "_blank")}
-                                                className="p-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 text-slate-400 dark:text-gray-400 hover:text-[#00845a] dark:hover:text-[#00b37a] hover:border-[#00845a] dark:hover:border-[#00b37a] hover:bg-emerald-50 dark:hover:bg-[#00845a]/10 rounded-2xl transition-all shadow-sm"
-                                            >
-                                                <EyeIcon className="text-xl" />
-                                            </button>
-                                            <button className="p-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 text-slate-400 dark:text-gray-400 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-500/30 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-2xl transition-all shadow-sm">
-                                                <DeleteIcon className="text-xl" />
-                                            </button>
+                                        </td>
+                                        <td className="py-6 px-8">
+                                            <div className="text-slate-700 dark:text-gray-200 font-black text-xs uppercase tracking-tight transition-colors">{resume.job_title || "Uncategorized"}</div>
+                                            <div className="text-[10px] text-slate-400 dark:text-gray-500 font-medium italic mt-1 line-clamp-1 transition-colors">{resume.location || "Global Remote"}</div>
+                                        </td>
+                                        <td className="py-6 px-8 text-center">
+                                            {resume.file_type?.toLowerCase().includes("pdf") ? (
+                                                <span className="inline-flex items-center gap-1.5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-black px-2.5 py-1 rounded-lg border border-rose-100 dark:border-rose-500/20 shadow-sm transition-colors">
+                                                    <FilePdfIcon /> PDF
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-black px-2.5 py-1 rounded-lg border border-blue-100 dark:border-blue-500/20 shadow-sm transition-colors">
+                                                    <FileDocxIcon /> DOCX
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="py-6 px-8 text-right">
+                                            <div className="flex justify-end items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button
+                                                    onClick={() => window.open(`/api/resumes/${resume.resume_id}/preview`, "_blank")}
+                                                    className="p-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 text-slate-400 dark:text-gray-400 hover:text-[#00845a] dark:hover:text-[#00b37a] hover:border-[#00845a] dark:hover:border-[#00b37a] hover:bg-emerald-50 dark:hover:bg-[#00845a]/10 rounded-2xl transition-all shadow-sm"
+                                                >
+                                                    <EyeIcon className="text-xl" />
+                                                </button>
+
+                                                {currentUser?.role === 'Admin' && (
+                                                    <button
+                                                        onClick={() => toast.info("Edit module routing not configured yet.")}
+                                                        className="p-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 text-slate-400 dark:text-gray-400 hover:text-blue-500 hover:border-blue-200 dark:hover:border-blue-500/30 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all shadow-sm"
+                                                    >
+                                                        <FiEdit2 className="text-xl" />
+                                                    </button>
+                                                )}
+
+                                                {currentUser?.role !== 'Viewer' && (
+                                                    <button
+                                                        onClick={() => setDeleteTarget({ id: resume.resume_id, name: resume.candidate_name })}
+                                                        className="p-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-white/10 text-slate-400 dark:text-gray-400 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-500/30 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-2xl transition-all shadow-sm"
+                                                    >
+                                                        <DeleteIcon className="text-xl" />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={4} className="py-32 text-center bg-slate-50/20 dark:bg-transparent">
+                                        <div className="flex flex-col items-center gap-8 text-slate-300 dark:text-gray-600">
+                                            <div className="relative">
+                                                <EmptyIcon className="text-[100px] opacity-10" />
+                                                <div className="absolute inset-0 flex items-center justify-center animate-pulse">
+                                                    <SearchIcon className="text-4xl opacity-20" />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-xl font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest transition-colors">No Matches Found</p>
+                                                <p className="text-xs font-bold opacity-60">Adjust your criteria or try a different keyword</p>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan={4} className="py-32 text-center bg-slate-50/20 dark:bg-transparent">
-                                    <div className="flex flex-col items-center gap-8 text-slate-300 dark:text-gray-600">
-                                        <div className="relative">
-                                            <EmptyIcon className="text-[100px] opacity-10" />
-                                            <div className="absolute inset-0 flex items-center justify-center animate-pulse">
-                                                <SearchIcon className="text-4xl opacity-20" />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <p className="text-xl font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest transition-colors">No Matches Found</p>
-                                            <p className="text-xs font-bold opacity-60">Adjust your criteria or try a different keyword</p>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
 
                 {/* Localized Pagination Interaction */}
-                <div className="p-6 bg-slate-50/40 dark:bg-transparent flex justify-between items-center border-t border-slate-100 dark:border-white/5 transition-colors">
+                <div className="p-4 md:p-6 bg-slate-50/40 dark:bg-transparent flex flex-wrap justify-between items-center gap-4 border-t border-slate-100 dark:border-white/5 transition-colors">
                     <button
                         disabled={page === 1}
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
-                        className="px-6 py-3 bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white disabled:opacity-20 hover:border-slate-300 dark:hover:border-white/20 shadow-sm transition-all flex items-center gap-3"
+                        className="flex-1 sm:flex-none justify-center px-4 md:px-6 py-3 bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white disabled:opacity-20 hover:border-slate-300 dark:hover:border-white/20 shadow-sm transition-all flex items-center gap-2 md:gap-3"
                     >
-                        <ToLeftArrowIcon /> Previous
+                        <ToLeftArrowIcon /> Prev
                     </button>
-                    <div className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-[#1a1a1a] border border-slate-100 dark:border-white/10 rounded-2xl shadow-inner transition-colors">
-                        <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mr-2 transition-colors">Results Page</span>
+                    <div className="flex items-center justify-center gap-2 px-4 md:px-5 py-2.5 bg-white dark:bg-[#1a1a1a] border border-slate-100 dark:border-white/10 rounded-2xl shadow-inner transition-colors">
+                        <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest mr-1 md:mr-2 transition-colors hidden sm:block">Results Page</span>
                         <div className="w-7 h-7 flex items-center justify-center bg-[#00845a] text-white text-[11px] font-black rounded-lg shadow-sm">
                             {page}
                         </div>
@@ -319,7 +372,7 @@ export default function FindResume() {
                     <button
                         disabled={!hasMore}
                         onClick={() => setPage((p) => p + 1)}
-                        className="px-6 py-3 bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white disabled:opacity-20 hover:border-slate-300 dark:hover:border-white/20 shadow-sm transition-all flex items-center gap-3"
+                        className="flex-1 sm:flex-none justify-center px-4 md:px-6 py-3 bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white disabled:opacity-20 hover:border-slate-300 dark:hover:border-white/20 shadow-sm transition-all flex items-center gap-2 md:gap-3"
                     >
                         Next <ToRightArrowIcon />
                     </button>

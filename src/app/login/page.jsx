@@ -52,13 +52,13 @@ export default function LoginPage() {
 
 
             {/* Glassmorphism Card */}
-            <div className="w-full max-w-[440px] p-10 sm:p-14 relative z-10 animate-in zoom-in-95 fade-in duration-700">
+            <div className="w-full max-w-[440px] px-6 py-10 sm:p-14 relative z-10 animate-in zoom-in-95 fade-in duration-700 mx-4 sm:mx-0">
                 {/* Glass Background Layer */}
                 <div className="absolute inset-0 bg-white/40 dark:bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/60 dark:border-white/10 shadow-2xl -z-10"></div>
 
 
-                <div className="text-center mb-12">
-                    <h1 className="text-5xl font-black text-slate-800 dark:text-white tracking-tight drop-shadow-sm">Login</h1>
+                <div className="text-center mb-10 sm:mb-12">
+                    <h1 className="text-4xl sm:text-5xl font-black text-slate-800 dark:text-white tracking-tight drop-shadow-sm">Login</h1>
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-8">
@@ -99,7 +99,11 @@ export default function LoginPage() {
                         </button>
                     </div>
 
-
+                    <div className="flex justify-end">
+                        <Link href="/forgot-password" className="text-[10px] font-black uppercase tracking-widest text-[#00845a] hover:text-[#00b37a] transition-colors">
+                            Forgot Password?
+                        </Link>
+                    </div>
 
                     {/* Submit Button */}
                     <button

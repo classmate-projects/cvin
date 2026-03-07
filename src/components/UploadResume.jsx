@@ -88,7 +88,7 @@ export default function UploadResume({ aiOnline = true }) {
             {metadata && <ReviewMetadata metadata={metadata} onConfirm={handleFinalSubmit} onCancel={resetUpload} isSubmitting={isSubmitting} />}
 
             <div
-                className={`group relative flex flex-col items-center justify-center border-2 border-dashed rounded-[2rem] p-16 transition-all duration-500 cursor-pointer overflow-hidden ${dragActive
+                className={`group relative flex flex-col items-center justify-center border-2 border-dashed rounded-[2rem] p-8 md:p-16 transition-all duration-500 cursor-pointer overflow-hidden ${dragActive
                     ? "bg-[#00845a]/5 dark:bg-[#00b37a]/10 border-[#00845a] dark:border-[#00b37a] scale-[1.01] shadow-2xl shadow-[#00845a]/10"
                     : "bg-slate-50/50 dark:bg-[#111111]/50 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-50 dark:hover:bg-[#1a1a1a]"
                     } ${analyzing ? "pointer-events-none opacity-80" : ""}`}
@@ -123,11 +123,11 @@ export default function UploadResume({ aiOnline = true }) {
                             <CloudUploadIcon className="text-6xl" />
                         </div>
 
-                        <div className="space-y-3">
-                            <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">
+                        <div className="space-y-3 px-4">
+                            <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">
                                 {file ? `Ready: ${file.name}` : (aiOnline ? "Portal Ingestion Zone" : "Manual Ingestion Zone")}
                             </h3>
-                            <p className="text-sm font-medium text-slate-500 dark:text-gray-400 max-w-xs mx-auto leading-relaxed transition-colors">
+                            <p className="text-xs md:text-sm font-medium text-slate-500 dark:text-gray-400 max-w-xs mx-auto leading-relaxed transition-colors">
                                 {file ? (aiOnline ? "Verifying file structure for AI sync..." : "Extracting file details...") : (aiOnline ? "Drag and drop your identity document here or browse local storage." : "AI disconnected. Drag a file here to ingest via manual entry.")}
                             </p>
                         </div>

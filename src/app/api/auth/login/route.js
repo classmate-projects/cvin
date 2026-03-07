@@ -1,15 +1,29 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { supabase } from "@/lib/supabase";
 
 export async function POST(req) {
     try {
         const body = await req.json();
         const { username, password } = body;
 
-        // Currently configured for single-admin
-        if (username === "admin" && password === "admin") {
+        // Query the database for the user
+        const { data: users, error } = await supabase.from("users").select("*").eq("email", username);
+        if (error) throw error;
+        const user = users[0];
+
+        if (user && user.password === password) {
             const cookieStore = await cookies();
-            cookieStore.set("auth_token", "admin_session", {
+
+            // Encode basic session payload since we don't have JWT here
+            const sessionData = Buffer.from(JSON.stringify({
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            })).toString("base64");
+
+            cookieStore.set("auth_token", sessionData, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 maxAge: 60 * 60 * 24 * 7, // 1 Week
@@ -21,6 +35,7 @@ export async function POST(req) {
 
         return NextResponse.json({ success: false, message: "Invalid credentials" }, { status: 401 });
     } catch (error) {
+        console.error("Login Error:", error);
         return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 });
     }
 }
