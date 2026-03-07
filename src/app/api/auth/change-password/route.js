@@ -1,4 +1,4 @@
-import pool from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
@@ -19,14 +19,24 @@ export async function POST(req) {
         const { currentPassword, newPassword } = await req.json();
 
         // Validate user password
-        const [rows] = await pool.query("SELECT password FROM users WHERE id = ?", [userId]);
+        const { data: rows, error: fetchError } = await supabase
+            .from("users")
+            .select("password")
+            .eq("id", userId);
 
-        if (rows.length === 0 || rows[0].password !== currentPassword) {
+        if (fetchError) throw fetchError;
+
+        if (!rows || rows.length === 0 || rows[0].password !== currentPassword) {
             return NextResponse.json({ success: false, message: "Invalid current priority key." }, { status: 400 });
         }
 
         // Update to new password
-        await pool.query("UPDATE users SET password = ? WHERE id = ?", [newPassword, userId]);
+        const { error: updateError } = await supabase
+            .from("users")
+            .update({ password: newPassword })
+            .eq("id", userId);
+
+        if (updateError) throw updateError;
 
         return NextResponse.json({ success: true, message: "Key rotated." });
     } catch (error) {

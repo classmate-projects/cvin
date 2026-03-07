@@ -1,19 +1,27 @@
-import pool from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 export async function GET(req, { params }) {
-  const { id } = params;
+  const { id } = await params;
 
   try {
-    const [rows] = await pool.query(
-      "SELECT file_name, file_type, resume_file FROM resume WHERE resume_id = ?",
-      [id]
-    );
+    const { data: rows, error } = await supabase
+      .from("resume")
+      .select("file_name, file_type, storage_path")
+      .eq("resume_id", id);
 
-    if (rows.length === 0) {
+    if (error) throw error;
+    if (!rows || rows.length === 0) {
       return new Response("Not found", { status: 404 });
     }
 
     const resume = rows[0];
+
+    // Download from Supabase Storage
+    const { data: fileBlob, error: downloadError } = await supabase.storage
+      .from("resumes")
+      .download(resume.storage_path);
+
+    if (downloadError) throw downloadError;
 
     // Safety check for file type
     let contentType = "application/octet-stream";
@@ -23,14 +31,16 @@ export async function GET(req, { params }) {
       contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
     }
 
-    return new Response(resume.resume_file, {
+    const fileBuffer = Buffer.from(await fileBlob.arrayBuffer());
+
+    return new Response(fileBuffer, {
       headers: {
         "Content-Type": contentType,
         "Content-Disposition": "inline",
       },
     });
   } catch (err) {
-    console.error("DB error:", err);
-    return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
+    console.error("Preview error:", err);
+    return new Response(JSON.stringify({ error: err.message || "Internal Server Error" }), { status: 500 });
   }
 }

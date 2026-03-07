@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
@@ -23,6 +23,8 @@ import {
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const service = searchParams.get("service");
     const [isOpen, setIsOpen] = useState(false);
 
     const isActive = (path) => pathname === path;
@@ -57,7 +59,7 @@ export default function Sidebar() {
                         <div className="w-8 h-8 bg-[#00845a] dark:bg-[#00b37a] rounded-lg flex items-center justify-center text-white shadow-lg transition-colors">
                             <FileIcon className="text-sm" />
                         </div>
-                        <span className="text-xl font-bold tracking-tight text-slate-800 dark:text-white transition-colors">CVin</span>
+                        <span className="text-xl font-bold tracking-tight text-slate-800 dark:text-white transition-colors">CViN</span>
                     </div>
                     <button onClick={() => setIsOpen(false)} className="lg:hidden text-slate-400 p-1 bg-slate-50 dark:bg-white/5 rounded transition-colors">
                         <BackArrowIcon />
@@ -94,7 +96,7 @@ export default function Sidebar() {
                                 icon={<FiMail />}
                                 label="Email"
                                 href="/maintenance?service=Email"
-                                active={isActive("/maintenance") && typeof window !== 'undefined' && window.location.search.includes("Email")}
+                                active={isActive("/maintenance") && service === "Email"}
                             />
 
                         </div>
@@ -139,7 +141,7 @@ export default function Sidebar() {
                                 icon={<FiBarChart2 />}
                                 label="Reports"
                                 href="/maintenance?service=Reports"
-                                active={isActive("/maintenance") && typeof window !== 'undefined' && window.location.search.includes("Reports")}
+                                active={isActive("/maintenance") && service === "Reports"}
                             />
                         </div>
                     </div>

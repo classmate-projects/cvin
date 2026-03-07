@@ -8,7 +8,7 @@ export default function Navbar() {
                 <div className="p-2.5 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl shadow-lg shadow-cyan-500/20 group-hover:scale-110 transition-transform">
                     <FileIcon className="text-white text-xl" />
                 </div>
-                <Link href="/" className="text-2xl font-black bg-gradient-to-r from-white via-cyan-100 to-blue-200 bg-clip-text text-transparent tracking-tighter">CVin</Link>
+                <Link href="/" className="text-2xl font-black bg-gradient-to-r from-white via-cyan-100 to-blue-200 bg-clip-text text-transparent tracking-tighter">CViN</Link>
             </div>
 
             <nav className="hidden md:flex items-center justify-center gap-12 bg-white/5 px-10 py-3 rounded-full border border-white/5">

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import pool from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 export async function POST(req) {
     try {
@@ -8,8 +8,9 @@ export async function POST(req) {
         const { username, password } = body;
 
         // Query the database for the user
-        const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [username]);
-        const user = rows[0];
+        const { data: users, error } = await supabase.from("users").select("*").eq("email", username);
+        if (error) throw error;
+        const user = users[0];
 
         if (user && user.password === password) {
             const cookieStore = await cookies();

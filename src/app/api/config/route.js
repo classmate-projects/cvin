@@ -1,9 +1,14 @@
 import { NextResponse } from "next/server";
-import pool from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 export async function GET() {
     try {
-        const [rows] = await pool.query("SELECT category, label, value, placeholder FROM app_config ORDER BY label ASC");
+        const { data: rows, error } = await supabase
+            .from("app_config")
+            .select("category, label, value, placeholder")
+            .order("label", { ascending: true });
+
+        if (error) throw error;
 
         // Group by category for easier frontend consumption
         const config = rows.reduce((acc, current) => {

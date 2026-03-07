@@ -1,4 +1,4 @@
-import pool from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
@@ -6,9 +6,14 @@ export async function POST(req) {
         const { email } = await req.json();
 
         // Check if user exists
-        const [rows] = await pool.query("SELECT id FROM users WHERE email = ?", [email]);
+        const { data: rows, error } = await supabase
+            .from("users")
+            .select("id")
+            .eq("email", email);
 
-        if (rows.length === 0) {
+        if (error) throw error;
+
+        if (!rows || rows.length === 0) {
             // For security, don't reveal if email exists, but user requested specific error toasts so we will reveal it
             return NextResponse.json({ success: false, message: "Identity mismatch. Account not found." }, { status: 404 });
         }

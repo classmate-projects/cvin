@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "CVin | Advanced Talent Management",
+  title: "CViN | Advanced Talent Management",
   description: "A high-performance resume analysis and talent scouting platform.",
 };
 
@@ -35,7 +35,7 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-[#00845a]/10 selection:text-[#00845a] dark:selection:bg-[#00845a]/30 bg-[#f8fafc] dark:bg-[#0a0a0a] text-slate-800 dark:text-gray-100 transition-colors duration-300`}>
+      <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-[#00845a]/10 selection:text-[#00845a] dark:selection:bg-[#00845a]/30 bg-[#f8fafc] dark:bg-[#0a0a0a] text-slate-800 dark:text-gray-100 transition-colors duration-300`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
 
           {isAuthenticated ? (

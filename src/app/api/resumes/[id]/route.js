@@ -1,4 +1,4 @@
-import pool from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -30,10 +30,27 @@ export async function DELETE(req, props) {
   }
 
   try {
-    await pool.query("DELETE FROM resume WHERE resume_id = ?", [id]);
+    // 1. Get storage path first
+    const { data: resume, error: fetchError } = await supabase
+      .from("resume")
+      .select("storage_path")
+      .eq("resume_id", id)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    // 2. Delete from Storage
+    if (resume?.storage_path) {
+      await supabase.storage.from("resumes").remove([resume.storage_path]);
+    }
+
+    // 3. Delete from DB
+    const { error: dbError } = await supabase.from("resume").delete().eq("resume_id", id);
+    if (dbError) throw dbError;
+
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err) {
-    console.error("DB error:", err);
-    return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
+    console.error("Delete error:", err);
+    return new Response(JSON.stringify({ error: err.message || "Internal Server Error" }), { status: 500 });
   }
 }
