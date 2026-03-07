@@ -1,4 +1,4 @@
-import pool from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { NextResponse } from "next/server";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -55,25 +55,45 @@ export async function POST(req) {
       );
     }
 
-    // Insert into DB
-    const [result] = await pool.query(
-      `INSERT INTO resume (
-        candidate_name, file_name, file_type, resume_file, 
-        age, job_title, visa_status, experience_years, 
-        specialization, email, location, education, role
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        candidateName, fileName, fileType, buffer,
-        metadata.age, metadata.job_title, metadata.visa_status, metadata.experience_years,
-        metadata.specialization, metadata.email, metadata.location, metadata.education, metadata.role
-      ]
-    );
+    // 1. Upload file to Supabase Storage
+    const storagePath = `${Date.now()}_${fileName.replace(/\s+/g, '_')}`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from("resumes")
+      .upload(storagePath, buffer, {
+        contentType: file.type,
+        upsert: false
+      });
 
-    return NextResponse.json({ success: true, id: result.insertId });
+    if (uploadError) throw uploadError;
+
+    // 2. Insert metadata into DB with storage path
+    const { data: dbResult, error: dbError } = await supabase.from("resume").insert([{
+      candidate_name: candidateName,
+      file_name: fileName,
+      file_type: fileType,
+      storage_path: storagePath,
+      age: metadata.age,
+      job_title: metadata.job_title,
+      visa_status: metadata.visa_status,
+      experience_years: metadata.experience_years ? parseInt(metadata.experience_years) : null,
+      specialization: metadata.specialization,
+      email: metadata.email,
+      location: metadata.location,
+      education: metadata.education,
+      role: metadata.role
+    }]).select("resume_id").single();
+
+    if (dbError) {
+      // Cleanup storage if DB insert fails
+      await supabase.storage.from("resumes").remove([storagePath]);
+      throw dbError;
+    }
+
+    return NextResponse.json({ success: true, id: dbResult.resume_id });
   } catch (err) {
     console.error("Upload error:", err);
     return NextResponse.json(
-      { success: false, message: "Internal Server Error" },
+      { success: false, message: err.message || "Internal Server Error" },
       { status: 500 }
     );
   }

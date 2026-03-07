@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import ThemeToggle from "@/components/ThemeToggle";
 import { cookies } from "next/headers";
 import LogoutButton from "@/components/LogoutButton";
+import HeaderProfile from "@/components/HeaderProfile";
 import Link from "next/link";
 
 const geistSans = Geist({
@@ -20,20 +21,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "CVin | Advanced Talent Management",
+  title: "CViN | Advanced Talent Management",
   description: "A high-performance resume analysis and talent scouting platform.",
 };
 
 export default async function RootLayout({ children }) {
   const cookieStore = await cookies();
-  const isAuthenticated = cookieStore.get("auth_token")?.value === "admin_session";
+  const authToken = cookieStore.get("auth_token")?.value;
+  const isAuthenticated = !!authToken;
 
   // Simulate currently active users (Dynamically read from session or DB in production)
   const activeSessions = isAuthenticated ? [{ id: 'admin', name: 'Administrator', role: 'System Admin', avatar: 'https://ui-avatars.com/api/?name=Admin&background=00845a&color=fff' }] : [];
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-[#00845a]/10 selection:text-[#00845a] dark:selection:bg-[#00845a]/30 bg-[#f8fafc] dark:bg-[#0a0a0a] text-slate-800 dark:text-gray-100 transition-colors duration-300`}>
+      <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-[#00845a]/10 selection:text-[#00845a] dark:selection:bg-[#00845a]/30 bg-[#f8fafc] dark:bg-[#0a0a0a] text-slate-800 dark:text-gray-100 transition-colors duration-300`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
 
           {isAuthenticated ? (
@@ -48,21 +50,10 @@ export default async function RootLayout({ children }) {
                     <span className="text-[10px] md:text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest truncate">Dashboard Overview</span>
                   </div>
                   <div className="flex items-center gap-4 md:gap-6">
-                    {/* Active Concurrent User Nodes */}
-                    <Link href={"/profile"}
-                     className="flex -space-x-2 relative group cursor-pointer" title={`Active Sessions: ${activeSessions.length}`}>
-                      {activeSessions.map((user, idx) => (
-                        <div key={user.id} className="relative z-[1] hover:z-10 transition-transform hover:scale-110">
-                          <img
-                            src={user.avatar}
-                            alt={user.name}
-                            className="w-8 h-8 rounded-full border-2 border-white dark:border-[#111111] ring-2 ring-slate-50 dark:ring-white/5 transition-colors"
-                          />
-                          <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-[#111111] rounded-full"></span>
-                        </div>
-                      ))}
+                    <Link href={"/profile"}>
+                      <HeaderProfile />
                     </Link>
-                    <div className="w-px h-6 bg-slate-100 dark:bg-white/10"></div>
+                    <div className="w-px h-6 bg-slate-100 dark:bg-white/10 hidden md:block"></div>
                     <ThemeToggle />
                     {/* <button className="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors p-2 text-xl" title="Notifications">🔔</button> */}
                     <LogoutButton />

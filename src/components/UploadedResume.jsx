@@ -2,6 +2,7 @@
 
 import { DeleteIcon, EmptyIcon, EyeIcon, FileDocxIcon, FilePdfIcon, ToLeftArrowIcon, ToRightArrowIcon } from "@/lib/icons";
 import { useEffect, useState } from "react";
+import { FiEdit2 } from "react-icons/fi";
 import ConfirmDelete from "./ConfirmDelete";
 import { toast } from "react-toastify";
 
@@ -10,6 +11,20 @@ export default function UploadedResume() {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const res = await fetch("/api/auth/me");
+                if (res.ok) {
+                    const data = await res.json();
+                    setCurrentUser(data.user);
+                }
+            } catch (err) { }
+        };
+        fetchUser();
+    }, []);
 
     const fetchResumes = async (pageNum = 1) => {
         try {
@@ -89,15 +104,30 @@ export default function UploadedResume() {
                                                 <button
                                                     onClick={() => handlePreview(resume.resume_id)}
                                                     className="p-2 text-slate-400 dark:text-gray-400 hover:text-[#00845a] dark:hover:text-[#00b37a] hover:bg-emerald-50 dark:hover:bg-[#00845a]/10 rounded-lg transition-all"
+                                                    title="Preview Resume"
                                                 >
                                                     <EyeIcon className="text-lg" />
                                                 </button>
-                                                <button
-                                                    onClick={() => setDeleteTarget({ id: resume.resume_id, name: resume.candidate_name })}
-                                                    className="p-2 text-slate-400 dark:text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all"
-                                                >
-                                                    <DeleteIcon className="text-lg" />
-                                                </button>
+
+                                                {currentUser?.role === 'Admin' && (
+                                                    <button
+                                                        onClick={() => toast.info("Edit mode not implemented yet.")}
+                                                        className="p-2 text-slate-400 dark:text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-all"
+                                                        title="Edit Details"
+                                                    >
+                                                        <FiEdit2 className="text-lg" />
+                                                    </button>
+                                                )}
+
+                                                {currentUser?.role !== 'Viewer' && (
+                                                    <button
+                                                        onClick={() => setDeleteTarget({ id: resume.resume_id, name: resume.candidate_name })}
+                                                        className="p-2 text-slate-400 dark:text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all"
+                                                        title="Delete Record"
+                                                    >
+                                                        <DeleteIcon className="text-lg" />
+                                                    </button>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>

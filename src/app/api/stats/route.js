@@ -1,29 +1,68 @@
 import { NextResponse } from "next/server";
-import pool from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 export async function GET() {
     try {
         // Total resumes
-        const [totalRows] = await pool.query("SELECT COUNT(*) as count FROM resume");
-        const total = totalRows[0].count;
+        const { count: total, error: totalError } = await supabase
+            .from("resume")
+            .select("*", { count: "exact", head: true });
+
+        if (totalError) throw totalError;
 
         // Recently added (last 7 days)
-        const [recentRows] = await pool.query("SELECT COUNT(*) as count FROM resume WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)");
-        const recent = recentRows[0].count;
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-        // Top categories
-        const [categoryRows] = await pool.query("SELECT job_title, COUNT(*) as count FROM resume WHERE job_title IS NOT NULL GROUP BY job_title ORDER BY count DESC LIMIT 3");
+        const { count: recent, error: recentError } = await supabase
+            .from("resume")
+            .select("*", { count: "exact", head: true })
+            .gte("created_at", sevenDaysAgo.toISOString());
+
+        if (recentError) throw recentError;
+
+        // Top categories (Aggregation in JS for simplicity, or use RPC)
+        const { data: allJobTitles, error: categoryError } = await supabase
+            .from("resume")
+            .select("job_title")
+            .not("job_title", "is", null);
+
+        if (categoryError) throw categoryError;
+
+        const categoryCounts = allJobTitles.reduce((acc, curr) => {
+            acc[curr.job_title] = (acc[curr.job_title] || 0) + 1;
+            return acc;
+        }, {});
+
+        const sortedCategories = Object.keys(categoryCounts)
+            .map(title => ({ job_title: title, count: categoryCounts[title] }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 3);
 
         // Formats Breakdown
-        const [formatRows] = await pool.query("SELECT file_type, COUNT(*) as count FROM resume GROUP BY file_type");
+        const { data: allFileTypes, error: formatError } = await supabase
+            .from("resume")
+            .select("file_type");
+
+        if (formatError) throw formatError;
+
+        const formatCounts = allFileTypes.reduce((acc, curr) => {
+            acc[curr.file_type] = (acc[curr.file_type] || 0) + 1;
+            return acc;
+        }, {});
+
+        const formatsResult = Object.keys(formatCounts).map(type => ({
+            file_type: type,
+            count: formatCounts[type]
+        }));
 
         return NextResponse.json({
             success: true,
             stats: {
-                total,
-                recent,
-                categories: categoryRows,
-                formats: formatRows
+                total: total || 0,
+                recent: recent || 0,
+                categories: sortedCategories,
+                formats: formatsResult
             }
         });
     } catch (error) {
