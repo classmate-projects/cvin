@@ -15,12 +15,14 @@ export async function GET(req) {
   const experienceMin = searchParams.get("experience_min");
   const experienceMax = searchParams.get("experience_max");
   const education = searchParams.get("education");
+  const status = searchParams.get("status");
+  const source = searchParams.get("source");
   const sortBy = searchParams.get("sort") || "created_at";
 
   try {
     let query = supabase
       .from("resume")
-      .select("resume_id, candidate_name, file_type, created_at, job_title, visa_status, experience_years, specialization, location, education");
+      .select("resume_id, candidate_name, email, file_type, created_at, job_title, visa_status, experience_years, specialization, location, education, status, source, sender_email");
 
     if (search) {
       query = query.ilike("candidate_name", `%${search}%`);
@@ -45,6 +47,15 @@ export async function GET(req) {
     }
     if (education) {
       query = query.ilike("education", `%${education}%`);
+    }
+    if (status) {
+      query = query.eq("status", status);
+    } else {
+      // Default to showing only Approved unless explicitly asked for Pending
+      query = query.eq("status", "Approved");
+    }
+    if (source) {
+      query = query.eq("source", source);
     }
 
     // Sorting
