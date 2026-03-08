@@ -9,6 +9,7 @@ import { cookies } from "next/headers";
 import LogoutButton from "@/components/LogoutButton";
 import HeaderProfile from "@/components/HeaderProfile";
 import Link from "next/link";
+import IdleTimer from "@/components/IdleTimer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -50,12 +51,13 @@ export default async function RootLayout({ children }) {
                     <span className="text-[10px] md:text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest truncate">Dashboard Overview</span>
                   </div>
                   <div className="flex items-center gap-4 md:gap-6">
+                    <IdleTimer />
+                    <div className="w-px h-6 bg-slate-100 dark:bg-white/10 hidden md:block"></div>
                     <Link href={"/profile"}>
                       <HeaderProfile />
                     </Link>
                     <div className="w-px h-6 bg-slate-100 dark:bg-white/10 hidden md:block"></div>
                     <ThemeToggle />
-                    {/* <button className="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors p-2 text-xl" title="Notifications">🔔</button> */}
                     <LogoutButton />
                   </div>
                 </header>

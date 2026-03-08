@@ -138,9 +138,19 @@ export default function FindResume() {
                     <p className="text-xs md:text-sm text-slate-500 dark:text-gray-400 font-medium transition-colors">Search through {resumes.length}+ scanned talent profiles</p>
                 </div>
                 <div className="flex w-full md:w-auto items-center gap-3">
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 text-xs font-bold px-4 py-2.5 rounded-xl outline-none focus:border-[#00845a] dark:focus:border-[#00b37a] transition-all cursor-pointer shadow-sm hidden md:block"
+                    >
+                        <option value="created_at">Date Added</option>
+                        <option value="candidate_name">Full Name</option>
+                        <option value="experience_years">Experience Level</option>
+                    </select>
+
                     <button
                         onClick={resetFilters}
-                        className="flex-1 md:flex-none justify-center text-xs font-bold text-slate-400 dark:text-gray-400 hover:text-[#00845a] dark:hover:text-[#00b37a] px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 transition-all flex items-center gap-2 bg-white dark:bg-[#1a1a1a]"
+                        className="flex-1 md:flex-none justify-center text-xs font-bold text-slate-400 dark:text-gray-500 hover:text-[#00845a] dark:hover:text-[#00b37a] px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 transition-all flex items-center gap-2 bg-white dark:bg-[#1a1a1a]"
                     >
                         <FiRefreshCw /> Reset Filters
                     </button>
@@ -169,15 +179,17 @@ export default function FindResume() {
 
                     {/* Quick Selectors */}
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 w-full xl:w-auto">
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                            className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 text-xs font-bold px-4 md:px-6 py-3.5 rounded-2xl outline-none focus:border-[#00845a] dark:focus:border-[#00b37a] transition-all cursor-pointer shadow-sm min-w-[150px] md:min-w-[180px] w-full sm:w-auto"
-                        >
-                            <option value="created_at">Date Added</option>
-                            <option value="candidate_name">Full Name</option>
-                            <option value="experience_years">Experience Level</option>
-                        </select>
+                        <div className="md:hidden">
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 text-xs font-bold px-4 md:px-6 py-3.5 rounded-2xl outline-none focus:border-[#00845a] dark:focus:border-[#00b37a] transition-all cursor-pointer shadow-sm w-full"
+                            >
+                                <option value="created_at">Date Added</option>
+                                <option value="candidate_name">Full Name</option>
+                                <option value="experience_years">Experience Level</option>
+                            </select>
+                        </div>
 
                         <button
                             onClick={() => setShowAdvanced(!showAdvanced)}

@@ -65,8 +65,8 @@ export default function ReviewMetadata({ metadata, onConfirm, onCancel, isSubmit
                                     <FiUser />
                                 </div>
                                 <input
-                                    name="name"
-                                    value={formData.name || ""}
+                                    name="candidate_name"
+                                    value={formData.candidate_name || ""}
                                     onChange={handleChange}
                                     className="w-full bg-slate-50 dark:bg-[#1a1a1a] border-none rounded-2xl pl-12 pr-4 py-3.5 text-sm text-slate-700 dark:text-gray-200 outline-none ring-2 ring-transparent focus:ring-[#00845a]/20 dark:focus:ring-[#00b37a]/20 transition-all font-black placeholder:text-slate-300 dark:placeholder:text-gray-600 shadow-inner"
                                     required
@@ -139,6 +139,31 @@ export default function ReviewMetadata({ metadata, onConfirm, onCancel, isSubmit
                                 placeholder="0"
                             />
                         </div>
+
+                        {/* Visa Status Input */}
+                        <div className="space-y-1.5">
+                            <label className="text-[10px] text-slate-400 dark:text-gray-500 uppercase font-black tracking-widest px-1 transition-colors">Visa Status</label>
+                            <input
+                                name="visa_status"
+                                value={formData.visa_status || ""}
+                                onChange={handleChange}
+                                className="w-full bg-slate-50 dark:bg-[#1a1a1a] border-none rounded-2xl px-5 py-3 text-xs text-slate-600 dark:text-gray-300 outline-none ring-2 ring-transparent focus:ring-[#00845a]/20 dark:focus:ring-[#00b37a]/20 transition-all shadow-inner font-bold"
+                                placeholder="e.g. Employment Visa, Golden Visa"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Education Field */}
+                    <div className="space-y-1.5 pt-2">
+                        <label className="text-[10px] text-slate-400 dark:text-gray-500 uppercase font-black tracking-widest px-1 transition-colors">Education Details</label>
+                        <textarea
+                            name="education"
+                            value={formData.education || ""}
+                            onChange={handleChange}
+                            rows="2"
+                            className="w-full bg-slate-50 dark:bg-[#1a1a1a] border-none rounded-2xl px-5 py-3 text-xs text-slate-700 dark:text-gray-200 outline-none ring-2 ring-transparent focus:ring-[#00845a]/20 dark:focus:ring-[#00b37a]/20 transition-all shadow-inner font-medium placeholder:italic dark:placeholder:text-gray-600"
+                            placeholder="e.g. Bachelor of Science in Computer Science"
+                        />
                     </div>
 
                     {/* Specialization Field with Emerald Accent Link */}

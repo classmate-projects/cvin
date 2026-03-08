@@ -45,9 +45,11 @@ export async function POST(req) {
         // Expanded model pool to bypass specific model quotas
         const modelsToTry = [
             "gemini-2.0-flash-lite-001", // Newer lite model, often has separate quota
-            "gemini-2.0-flash",          // Your primary model
+            "gemini-2.0-flash",          // Primary 2.0 model
+            "gemini-1.5-flash",          // Highly reliable 1.5 fallback
+            "gemini-1.5-pro",            // Intelligent fallback
             "gemini-2.0-flash-001",      // Specific version
-            "gemini-pro-latest"          // Robust fallback
+            "gemini-pro-latest"          // Robust legacy fallback
         ];
 
         let result;
@@ -59,11 +61,11 @@ export async function POST(req) {
                 const model = genAI.getGenerativeModel({ model: modelName });
 
                 const prompt = `
-                  Extract this information from the resume: name, age, email, job_title, location, experience_years, visa_status, role, specialization, education.
+                  Extract this information from the resume: candidate_name, age, email, job_title, location, experience_years, visa_status, role, specialization, education.
                   Return ONLY valid JSON. If missing, use null.
                 `;
 
-                if (pdfPart && (modelName.includes("flash") || modelName.includes("2.0"))) {
+                if (pdfPart && (modelName.includes("flash") || modelName.includes("2.0") || modelName.includes("1.5"))) {
                     result = await model.generateContent([prompt, pdfPart]);
                 } else if (extractedText) {
                     result = await model.generateContent([prompt, extractedText]);
@@ -91,7 +93,11 @@ export async function POST(req) {
                     details: "You've made several requests in a short time. Please wait 2-3 minutes for the 'Free Tier' limit to reset."
                 }, { status: 429 });
             }
-            throw new Error("Unable to process resume with available AI models.");
+            console.error("DEBUG: All models failed to process.");
+            return NextResponse.json({
+                error: "Analysis failed",
+                details: "All AI models failed to process this resume. This might be due to file complexity or temporary service issues."
+            }, { status: 500 });
         }
 
         const responseText = result.response.text();
