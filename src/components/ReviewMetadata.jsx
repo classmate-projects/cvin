@@ -140,44 +140,62 @@ export default function ReviewMetadata({ metadata, onConfirm, onCancel, isSubmit
                             />
                         </div>
 
-                        {/* Visa Status Input */}
+                        {/* Visa Status Input with Suggestions */}
                         <div className="space-y-1.5">
                             <label className="text-[10px] text-slate-400 dark:text-gray-500 uppercase font-black tracking-widest px-1 transition-colors">Visa Status</label>
                             <input
                                 name="visa_status"
+                                list="visa-status-list"
                                 value={formData.visa_status || ""}
                                 onChange={handleChange}
                                 className="w-full bg-slate-50 dark:bg-[#1a1a1a] border-none rounded-2xl px-5 py-3 text-xs text-slate-600 dark:text-gray-300 outline-none ring-2 ring-transparent focus:ring-[#00845a]/20 dark:focus:ring-[#00b37a]/20 transition-all shadow-inner font-bold"
                                 placeholder="e.g. Employment Visa, Golden Visa"
                             />
+                            <datalist id="visa-status-list">
+                                {config?.visa_status?.map(opt => (
+                                    <option key={opt.value} value={opt.value} />
+                                ))}
+                            </datalist>
                         </div>
                     </div>
 
-                    {/* Education Field */}
+                    {/* Education Field with Suggestions */}
                     <div className="space-y-1.5 pt-2">
                         <label className="text-[10px] text-slate-400 dark:text-gray-500 uppercase font-black tracking-widest px-1 transition-colors">Education Details</label>
                         <textarea
                             name="education"
+                            list="education-list"
                             value={formData.education || ""}
                             onChange={handleChange}
                             rows="2"
                             className="w-full bg-slate-50 dark:bg-[#1a1a1a] border-none rounded-2xl px-5 py-3 text-xs text-slate-700 dark:text-gray-200 outline-none ring-2 ring-transparent focus:ring-[#00845a]/20 dark:focus:ring-[#00b37a]/20 transition-all shadow-inner font-medium placeholder:italic dark:placeholder:text-gray-600"
                             placeholder="e.g. Bachelor of Science in Computer Science"
                         />
+                        <datalist id="education-list">
+                            {config?.education?.map(opt => (
+                                <option key={opt.value} value={opt.value} />
+                            ))}
+                        </datalist>
                     </div>
 
-                    {/* Specialization Field with Emerald Accent Link */}
+                    {/* Specialization Field with Suggestions */}
                     <div className="space-y-1.5 pt-2">
                         <label className="text-[10px] text-slate-400 dark:text-gray-500 uppercase font-black tracking-widest px-1 flex items-center gap-2 transition-colors">
                             Neural Keyword Tagging <FiAperture className="text-[#00845a] dark:text-[#00b37a]" />
                         </label>
                         <input
                             name="specialization"
+                            list="specialization-list"
                             value={formData.specialization || ""}
                             onChange={handleChange}
                             className="w-full bg-slate-50 dark:bg-[#1a1a1a] border-l-4 border-l-[#00845a] dark:border-l-[#00b37a] rounded-2xl px-5 py-3.5 text-xs text-slate-700 dark:text-gray-200 outline-none ring-2 ring-transparent focus:ring-[#00845a]/20 dark:focus:ring-[#00b37a]/20 transition-all shadow-inner font-bold placeholder:italic placeholder:font-medium dark:placeholder:text-gray-600"
                             placeholder={specPlaceholder}
                         />
+                        <datalist id="specialization-list">
+                            {config?.specialization?.map(opt => (
+                                <option key={opt.value} value={opt.value} />
+                            ))}
+                        </datalist>
                     </div>
 
                     {/* CTA Primary and Secondary Buttons */}

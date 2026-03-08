@@ -14,12 +14,13 @@ export async function GET(req) {
   const location = searchParams.get("location");
   const experienceMin = searchParams.get("experience_min");
   const experienceMax = searchParams.get("experience_max");
+  const education = searchParams.get("education");
   const sortBy = searchParams.get("sort") || "created_at";
 
   try {
     let query = supabase
       .from("resume")
-      .select("resume_id, candidate_name, file_type, created_at, job_title, visa_status, experience_years, specialization, location");
+      .select("resume_id, candidate_name, file_type, created_at, job_title, visa_status, experience_years, specialization, location, education");
 
     if (search) {
       query = query.ilike("candidate_name", `%${search}%`);
@@ -41,6 +42,9 @@ export async function GET(req) {
     }
     if (experienceMax) {
       query = query.lte("experience_years", parseInt(experienceMax));
+    }
+    if (education) {
+      query = query.ilike("education", `%${education}%`);
     }
 
     // Sorting
