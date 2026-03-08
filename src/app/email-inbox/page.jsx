@@ -68,6 +68,8 @@ export default function EmailInbox() {
                 toast.success("Profile approved and moved to Talent Discovery!");
                 setSelectedResume(null);
                 fetchPendingEmails();
+                // Proactively add one more if we have space
+                handleSync();
             }
         } catch (err) {
             toast.error("Approval failed");
@@ -81,11 +83,14 @@ export default function EmailInbox() {
             if (res.ok) {
                 toast.warn("CV discarded.");
                 fetchPendingEmails();
+                // Proactively add one more if we have space
+                handleSync();
             }
         } catch (err) {
             toast.error("Failed to delete record");
         }
     };
+
 
     return (
         <div className="max-w-6xl mx-auto space-y-8 pb-20 animate-in fade-in duration-500">
@@ -109,9 +114,11 @@ export default function EmailInbox() {
                     className="w-full sm:w-auto bg-[#00845a] dark:bg-[#00b37a]/10 dark:text-[#00b37a] dark:border dark:border-[#00b37a]/50 text-white px-6 py-3 rounded-2xl flex items-center justify-center gap-3 font-bold text-xs uppercase tracking-widest hover:bg-[#006e4a] dark:hover:bg-[#00b37a]/20 transition-all shadow-lg shadow-[#00845a]/20 disabled:opacity-50"
                 >
                     <FiRefreshCw className={syncing ? "animate-spin" : ""} />
-                    {syncing ? "Syncing Mailbox..." : "Sync Emails"}
+                    {syncing ? "Neural Syncing..." : "Sync Emails"}
                 </button>
             </header>
+
+
 
             <div className="card-glass bg-white dark:bg-[#151515] overflow-hidden transition-colors p-0">
                 <div className="overflow-x-auto">
@@ -146,6 +153,15 @@ export default function EmailInbox() {
                                         </td>
                                         <td className="py-6 px-8 text-right">
                                             <div className="flex justify-end gap-2">
+                                                <a
+                                                    href={`/api/resumes/${email.resume_id}/preview`}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="p-2.5 bg-slate-50 dark:bg-white/5 text-slate-400 rounded-xl border border-slate-100 dark:border-white/10 hover:bg-[#00845a] hover:text-white hover:border-transparent hover:scale-105 transition-all"
+                                                    title="View Original CV"
+                                                >
+                                                    <FiEye className="text-lg" />
+                                                </a>
                                                 <button
                                                     onClick={() => handleApprove(email)}
                                                     className="p-2.5 bg-emerald-50 dark:bg-emerald-500/10 text-[#00845a] dark:text-[#00b37a] rounded-xl border border-emerald-100 dark:border-emerald-500/20 hover:scale-105 transition-all"
@@ -160,6 +176,7 @@ export default function EmailInbox() {
                                                 >
                                                     <FiXCircle className="text-lg" />
                                                 </button>
+
                                             </div>
                                         </td>
                                     </tr>

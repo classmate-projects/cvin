@@ -18,8 +18,10 @@ import {
     FiBarChart2,
     FiUsers,
     FiUserPlus,
-    FiMenu
+    FiMenu,
+    FiRefreshCw
 } from "react-icons/fi";
+
 
 export default function Sidebar() {
     const pathname = usePathname();
@@ -30,6 +32,25 @@ export default function Sidebar() {
     const isActive = (path) => pathname === path;
 
     const [pendingCount, setPendingCount] = useState(0);
+    const [syncing, setSyncing] = useState(false);
+
+    const handleManualSync = async () => {
+        if (syncing) return;
+        setSyncing(true);
+        try {
+            const res = await fetch("/api/email/sync", { method: "POST" });
+            const data = await res.json();
+            if (data.success) {
+                const countRes = await fetch("/api/resumes?status=Pending&source=Email&limit=1");
+                const countData = await countRes.json();
+                setPendingCount(countData.resumes?.length || 0);
+            }
+        } catch (e) {
+            console.error("Background sync failed", e);
+        } finally {
+            setSyncing(false);
+        }
+    };
 
     useEffect(() => {
         const fetchCount = async () => {
@@ -45,6 +66,7 @@ export default function Sidebar() {
         const interval = setInterval(fetchCount, 30000); // Poll every 30s
         return () => clearInterval(interval);
     }, []);
+
 
     return (
         <>
@@ -147,10 +169,48 @@ export default function Sidebar() {
                     </div>
                 </div>
 
-                {/* Footer / Active Sessions */}
+                {/* Footer / Active Sessions & Background Tasks */}
                 <div className="pt-6 mt-6 border-t border-slate-100 dark:border-white/5 transition-colors">
+                    {syncing && (
+                        <div className="mb-6 px-2 animate-in slide-in-from-bottom-2 duration-500">
+                            <div className="bg-emerald-50/50 dark:bg-emerald-500/5 rounded-2xl p-4 border border-emerald-100/50 dark:border-emerald-500/10 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-2 opacity-20">
+                                    <FiRefreshCw className="text-2xl animate-spin text-emerald-600 dark:text-emerald-400" />
+                                </div>
+                                <div className="flex items-start gap-3 relative z-10">
+                                    <div className="w-8 h-8 rounded-full bg-white dark:bg-[#1a1a1a] shadow-sm flex items-center justify-center">
+                                        <FiMail className="text-xs text-emerald-600 dark:text-emerald-400 animate-pulse" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mb-1">Neural Sync Active</p>
+                                        <div className="w-full bg-emerald-100 dark:bg-emerald-500/20 h-1 rounded-full overflow-hidden">
+                                            <div className="h-full bg-emerald-500 w-1/2 rounded-full animate-[loading-bar_1.5s_infinite_ease-in-out]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <style jsx>{`
+                                    @keyframes loading-bar {
+                                        0% { transform: translateX(-100%); width: 30%; }
+                                        50% { width: 60%; }
+                                        100% { transform: translateX(400%); width: 30%; }
+                                    }
+                                `}</style>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="flex flex-col gap-3 px-2 mb-2">
-                        <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest transition-colors">Active Sessions</span>
+                        <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest transition-colors">Active Sessions</span>
+                            <button
+                                onClick={handleManualSync}
+                                disabled={syncing}
+                                className={`p-1.5 rounded-lg transition-all ${syncing ? 'text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10' : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5'}`}
+                                title="Run manual sync"
+                            >
+                                <FiRefreshCw className={`text-xs ${syncing ? 'animate-spin' : ''}`} />
+                            </button>
+                        </div>
                         <div className="flex -space-x-2 relative group cursor-pointer" title="Active Sessions: 1">
                             <div className="relative z-[1] hover:z-10 transition-transform hover:scale-110">
                                 <img
@@ -163,6 +223,7 @@ export default function Sidebar() {
                         </div>
                     </div>
                 </div>
+
             </aside>
         </>
     );
