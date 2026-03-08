@@ -29,7 +29,7 @@ export default function UploadResume({ aiOnline = true }) {
     const handleAnalyze = async (selectedFile) => {
         if (!aiOnline) {
             toast.info("AI Infrastructure Offline - Opening manual form");
-            setMetadata({ name: "", email: "", job_title: "", location: "", experience_years: "", visa_status: "", specialization: "" });
+            setMetadata({ candidate_name: "", email: "", job_title: "", location: "", experience_years: "", visa_status: "", specialization: "" });
             return;
         }
 
@@ -45,11 +45,11 @@ export default function UploadResume({ aiOnline = true }) {
             } else {
                 const isQuotaError = res.status === 429;
                 toast.info(isQuotaError ? "AI busy - manual entry enabled." : "Analysis paused - manual entry enabled.");
-                setMetadata({ name: "", email: "", job_title: "", location: "", experience_years: "", visa_status: "", specialization: "" });
+                setMetadata({ candidate_name: "", email: "", job_title: "", location: "", experience_years: "", visa_status: "", specialization: "" });
             }
         } catch (error) {
             toast.warn("Switching to manual entry.");
-            setMetadata({ name: "" });
+            setMetadata({ candidate_name: "" });
         } finally {
             setAnalyzing(false);
         }
