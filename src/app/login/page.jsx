@@ -28,9 +28,10 @@ export default function LoginPage() {
 
             if (res.ok && data.success) {
                 toast.success("Authentication successful");
-                router.push("/find-resume");
+                router.push("/");
                 router.refresh();
             } else {
+
                 toast.error(data.message || "Invalid credentials");
             }
         } catch (error) {

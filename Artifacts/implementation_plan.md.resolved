@@ -1,0 +1,47 @@
+# Email Ingestion Implementation Plan
+
+This plan outlines the steps to complete the Email CV Ingestion feature, focusing on the IMAP configuration and database schema updates.
+
+## 1. Database Schema Update
+The current `resume` table is missing the necessary columns to track the status and source of CVs ingested via email. Run the following SQL in your Supabase SQL Editor:
+
+```sql
+-- Add missing columns to the resume table
+ALTER TABLE resume 
+ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'Approved',
+ADD COLUMN IF NOT EXISTS source VARCHAR(50) DEFAULT 'Upload',
+ADD COLUMN IF NOT EXISTS sender_email VARCHAR(255) NULL;
+
+-- Update existing records to have a default status/source
+UPDATE resume SET status = 'Approved', source = 'Upload' WHERE status IS NULL;
+```
+
+## 2. Environment Configuration
+Update your [.env](file:///C:/Users/prabi/OneDrive/Documents/Business/CViN/.env) file with your email credentials. If you are using Gmail, you **must** use an **App Password**, not your regular password.
+
+| Variable | Value | Notes |
+| :--- | :--- | :--- |
+| `EMAIL_USER` | `your-email@gmail.com` | Your full email address |
+| `EMAIL_PASSWORD` | `xxxx xxxx xxxx xxxx` | Generated Google App Password |
+| `EMAIL_HOST` | `imap.gmail.com` | IMAP server host |
+| `EMAIL_PORT` | `993` | Standard IMAP port |
+| `EMAIL_TLS` | `true` | Use TLS encryption |
+
+### How to get a Google App Password:
+1. Go to your [Google Account Settings](https://myaccount.google.com/).
+2. Select **Security**.
+3. Under "How you sign in to Google," select **2-Step Verification**.
+4. Scroll to the bottom and select **App passwords**.
+5. Give it a name (e.g., "CViN Email Sync") and click **Create**.
+6. Copy the 16-character code and paste it into `EMAIL_PASSWORD` in your [.env](file:///C:/Users/prabi/OneDrive/Documents/Business/CViN/.env).
+
+## 3. Testing the Connection
+You can test the connection manually by clicking the **"Sync Emails"** button on the **Email Ingestion** page in the UI.
+
+I have also prepared a verification script below to test the connection directly from the terminal.
+
+## 4. Feature Flow
+1. **Sync**: Fetches unread emails with PDF/DOCX attachments.
+2. **Analyze**: Uses Gemini to extract candidate details.
+3. **Pending Store**: Saves the CV to Supabase with `status: "Pending"` and `source: "Email"`.
+4. **Manual Review**: You review the details in the **Email Ingestion** tab and click **Approve** to move them to the main Talent Discovery list.

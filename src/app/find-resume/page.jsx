@@ -35,6 +35,8 @@ export default function FindResume() {
     const [experienceMin, setExperienceMin] = useState("");
     const [experienceMax, setExperienceMax] = useState("");
     const [location, setLocation] = useState("");
+    const [specialization, setSpecialization] = useState("");
+    const [education, setEducation] = useState("");
 
     const fetchConfig = async () => {
         try {
@@ -75,6 +77,8 @@ export default function FindResume() {
                     experience_min: experienceMin,
                     experience_max: experienceMax,
                     location: location,
+                    specialization: specialization,
+                    education: education,
                 });
 
                 const res = await fetch(`/api/resumes?${params.toString()}`);
@@ -90,12 +94,12 @@ export default function FindResume() {
                 setLoading(false);
             }
         },
-        [sortBy, search, jobTitle, visaStatus, experienceMin, experienceMax, location]
+        [sortBy, search, jobTitle, visaStatus, experienceMin, experienceMax, location, specialization, education]
     );
 
     useEffect(() => {
         setPage(1);
-    }, [search, jobTitle, visaStatus, experienceMin, experienceMax, location, sortBy]);
+    }, [search, jobTitle, visaStatus, experienceMin, experienceMax, location, specialization, education, sortBy]);
 
     useEffect(() => {
         fetchResumes(page);
@@ -108,6 +112,8 @@ export default function FindResume() {
         setExperienceMax("");
         setLocation("");
         setSearch("");
+        setSpecialization("");
+        setEducation("");
     };
 
     return (
@@ -265,6 +271,32 @@ export default function FindResume() {
                             />
                         </div>
                     </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">Education Background</label>
+                        <select
+                            value={education}
+                            onChange={(e) => setEducation(e.target.value)}
+                            className="w-full bg-slate-50 dark:bg-[#1a1a1a] border-none rounded-xl px-4 py-2.5 text-xs text-slate-600 dark:text-gray-300 outline-none focus:ring-2 focus:ring-[#00845a]/20 dark:focus:ring-[#00b37a]/20 transition-colors"
+                        >
+                            <option value="">All Educations</option>
+                            {config?.education?.map(opt => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">Specialization / Skills</label>
+                        <select
+                            value={specialization}
+                            onChange={(e) => setSpecialization(e.target.value)}
+                            className="w-full bg-slate-50 dark:bg-[#1a1a1a] border-none rounded-xl px-4 py-2.5 text-xs text-slate-600 dark:text-gray-300 outline-none focus:ring-2 focus:ring-[#00845a]/20 dark:focus:ring-[#00b37a]/20 transition-colors"
+                        >
+                            <option value="">All Specializations</option>
+                            {config?.specialization?.map(opt => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -301,7 +333,21 @@ export default function FindResume() {
                                         </td>
                                         <td className="py-6 px-8">
                                             <div className="text-slate-700 dark:text-gray-200 font-black text-xs uppercase tracking-tight transition-colors">{resume.job_title || "Uncategorized"}</div>
-                                            <div className="text-[10px] text-slate-400 dark:text-gray-500 font-medium italic mt-1 line-clamp-1 transition-colors">{resume.location || "Global Remote"}</div>
+                                            <div className="flex flex-col gap-1 mt-1">
+                                                <div className="text-[10px] text-slate-400 dark:text-gray-500 font-medium italic line-clamp-1 transition-colors">{resume.location || "Global Remote"}</div>
+                                                {resume.education && (
+                                                    <div className="text-[9px] text-slate-400 dark:text-gray-600 font-bold uppercase tracking-tight line-clamp-1">{resume.education}</div>
+                                                )}
+                                                {resume.specialization && (
+                                                    <div className="flex flex-wrap gap-1 mt-1">
+                                                        {resume.specialization.split(',').map((tag, i) => (
+                                                            <span key={i} className="px-1.5 py-0.5 bg-slate-50 dark:bg-white/5 text-[8px] font-bold text-slate-400 dark:text-gray-500 rounded border border-slate-100 dark:border-white/5">
+                                                                {tag.trim()}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="py-6 px-8 text-center">
                                             {resume.file_type?.toLowerCase().includes("pdf") ? (
