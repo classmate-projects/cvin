@@ -31,6 +31,7 @@ export default function LoginPage() {
                 router.push("/");
                 router.refresh();
             } else {
+
                 toast.error(data.message || "Invalid credentials");
             }
         } catch (error) {

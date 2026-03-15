@@ -18,8 +18,10 @@ import {
     FiBarChart2,
     FiUsers,
     FiUserPlus,
-    FiMenu
+    FiMenu,
+    FiRefreshCw
 } from "react-icons/fi";
+
 
 export default function Sidebar() {
     const pathname = usePathname();
@@ -29,10 +31,42 @@ export default function Sidebar() {
 
     const isActive = (path) => pathname === path;
 
-    // Close sidebar on path change in mobile
+    const [pendingCount, setPendingCount] = useState(0);
+    const [syncing, setSyncing] = useState(false);
+
+    const handleManualSync = async () => {
+        if (syncing) return;
+        setSyncing(true);
+        try {
+            const res = await fetch("/api/email/sync", { method: "POST" });
+            const data = await res.json();
+            if (data.success) {
+                const countRes = await fetch("/api/resumes?status=Pending&source=Email&limit=1");
+                const countData = await countRes.json();
+                setPendingCount(countData.resumes?.length || 0);
+            }
+        } catch (e) {
+            console.error("Background sync failed", e);
+        } finally {
+            setSyncing(false);
+        }
+    };
+
     useEffect(() => {
-        setIsOpen(false);
-    }, [pathname]);
+        const fetchCount = async () => {
+            try {
+                const res = await fetch("/api/resumes?status=Pending&source=Email&limit=1");
+                const { resumes } = await res.json();
+                // Simple hack for now: if we have any, we show a badge. 
+                // In a real app we'd use a separate count API.
+                setPendingCount(resumes?.length || 0);
+            } catch (e) { }
+        };
+        fetchCount();
+        const interval = setInterval(fetchCount, 30000); // Poll every 30s
+        return () => clearInterval(interval);
+    }, []);
+
 
     return (
         <>
@@ -66,19 +100,6 @@ export default function Sidebar() {
                     </button>
                 </div>
 
-                {/* Global Search Interface */}
-                {/* <div className="relative mb-8 group transition-colors">
-                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none group-focus-within:text-[#00845a] dark:group-focus-within:text-[#00b37a]">
-                    <SearchIcon className="text-slate-400 text-sm transition-colors" />
-                </div>
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    className="w-full bg-slate-50 dark:bg-[#1a1a1a] border-none rounded-xl pl-10 py-2.5 text-xs text-slate-700 dark:text-gray-300 focus:ring-2 focus:ring-[#00845a]/20 dark:focus:ring-[#00b37a]/20 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-gray-500"
-                />
-                <span className="absolute right-3 inset-y-0 flex items-center text-[10px] bg-white dark:bg-[#252525] border border-slate-100 dark:border-white/10 px-1 rounded h-5 my-auto text-slate-400 dark:text-gray-500 font-mono transition-colors">⌘K</span>
-            </div> */}
-
                 {/* Navigation Menus */}
                 <div className="flex-1 space-y-8 overflow-y-auto scrollbar-hide">
                     {/* Main Menu */}
@@ -95,8 +116,9 @@ export default function Sidebar() {
                             <SidebarItem
                                 icon={<FiMail />}
                                 label="Email"
-                                href="/maintenance?service=Email"
-                                active={isActive("/maintenance") && service === "Email"}
+                                href="/email-inbox"
+                                active={isActive("/email-inbox")}
+                                badge={pendingCount > 0 ? pendingCount : null}
                             />
 
                         </div>
@@ -147,10 +169,48 @@ export default function Sidebar() {
                     </div>
                 </div>
 
-                {/* Footer / Active Sessions */}
+                {/* Footer / Active Sessions & Background Tasks */}
                 <div className="pt-6 mt-6 border-t border-slate-100 dark:border-white/5 transition-colors">
+                    {syncing && (
+                        <div className="mb-6 px-2 animate-in slide-in-from-bottom-2 duration-500">
+                            <div className="bg-emerald-50/50 dark:bg-emerald-500/5 rounded-2xl p-4 border border-emerald-100/50 dark:border-emerald-500/10 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-2 opacity-20">
+                                    <FiRefreshCw className="text-2xl animate-spin text-emerald-600 dark:text-emerald-400" />
+                                </div>
+                                <div className="flex items-start gap-3 relative z-10">
+                                    <div className="w-8 h-8 rounded-full bg-white dark:bg-[#1a1a1a] shadow-sm flex items-center justify-center">
+                                        <FiMail className="text-xs text-emerald-600 dark:text-emerald-400 animate-pulse" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mb-1">Neural Sync Active</p>
+                                        <div className="w-full bg-emerald-100 dark:bg-emerald-500/20 h-1 rounded-full overflow-hidden">
+                                            <div className="h-full bg-emerald-500 w-1/2 rounded-full animate-[loading-bar_1.5s_infinite_ease-in-out]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <style jsx>{`
+                                    @keyframes loading-bar {
+                                        0% { transform: translateX(-100%); width: 30%; }
+                                        50% { width: 60%; }
+                                        100% { transform: translateX(400%); width: 30%; }
+                                    }
+                                `}</style>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="flex flex-col gap-3 px-2 mb-2">
-                        <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest transition-colors">Active Sessions</span>
+                        <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest transition-colors">Active Sessions</span>
+                            <button
+                                onClick={handleManualSync}
+                                disabled={syncing}
+                                className={`p-1.5 rounded-lg transition-all ${syncing ? 'text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10' : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5'}`}
+                                title="Run manual sync"
+                            >
+                                <FiRefreshCw className={`text-xs ${syncing ? 'animate-spin' : ''}`} />
+                            </button>
+                        </div>
                         <div className="flex -space-x-2 relative group cursor-pointer" title="Active Sessions: 1">
                             <div className="relative z-[1] hover:z-10 transition-transform hover:scale-110">
                                 <img
@@ -163,12 +223,13 @@ export default function Sidebar() {
                         </div>
                     </div>
                 </div>
+
             </aside>
         </>
     );
 }
 
-function SidebarItem({ icon, label, href, active }) {
+function SidebarItem({ icon, label, href, active, badge }) {
     return (
         <Link
             href={href}
@@ -178,13 +239,15 @@ function SidebarItem({ icon, label, href, active }) {
                 }`}
         >
             <div className="flex items-center gap-3">
-                <span className={`text-lg transition-colors ${active ? "text-white" : "text-slate-400 dark:text-gray-500 group-hover:text-[#00845a] dark:group-hover:text-[#00b37a]"}`}>
+                <span className={`text-lg transition-colors ${active ? "text-white" : "text-slate-400 dark:text-gray-500 group-hover:text-[#00845a] dark:hover:group-hover:text-[#00b37a]"}`}>
                     {icon}
                 </span>
                 <span className="text-sm font-bold">{label}</span>
             </div>
-            {label === "Email" && (
-                <span className="bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full transition-colors">12</span>
+            {badge && (
+                <span className="bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full transition-all animate-pulse shadow-sm">
+                    {badge}
+                </span>
             )}
         </Link>
     );
