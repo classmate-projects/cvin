@@ -125,7 +125,7 @@ export default function ProfilePage() {
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[10px] text-slate-400 font-black uppercase tracking-widest">New Priority Key</label>
+                        <label className="text-[10px] text-slate-400 font-black uppercase tracking-widest">New Password</label>
                         <input
                             name="newPassword" type="password" value={passwords.newPassword} onChange={handleChange} required minLength={6}
                             className="w-full bg-slate-50 dark:bg-[#1a1a1a] border-none rounded-xl px-4 py-3 text-sm text-slate-800 dark:text-white outline-none ring-1 ring-transparent focus:ring-[#00845a]/30 transition-all font-mono"
@@ -133,7 +133,7 @@ export default function ProfilePage() {
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Confirm Priority Key</label>
+                        <label className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Confirm Password</label>
                         <input
                             name="confirmPassword" type="password" value={passwords.confirmPassword} onChange={handleChange} required minLength={6}
                             className="w-full bg-slate-50 dark:bg-[#1a1a1a] border-none rounded-xl px-4 py-3 text-sm text-slate-800 dark:text-white outline-none ring-1 ring-transparent focus:ring-[#00845a]/30 transition-all font-mono"
@@ -144,7 +144,7 @@ export default function ProfilePage() {
                         type="submit" disabled={isSubmitting}
                         className="w-full bg-slate-900 dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-200 font-black text-xs uppercase tracking-[0.2em] py-4 rounded-xl transition-all disabled:opacity-50 active:scale-95 shadow-sm"
                     >
-                        {isSubmitting ? "Rotating Key..." : "Commit Key Change"}
+                        {isSubmitting ? "Changing password..." : "Change password"}
                     </button>
                 </form>
             </div>
