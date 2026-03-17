@@ -6,11 +6,14 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+import packageJson from "../../../package.json";
+
 export default function LoginPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isAuthenticated, setIsAUthenticated] = useState(false)
     const router = useRouter();
 
     const handleLogin = async (e) => {
@@ -27,7 +30,8 @@ export default function LoginPage() {
             const data = await res.json();
 
             if (res.ok && data.success) {
-                toast.success("Authentication successful");
+                // toast.success("Authentication successful");
+                setIsAUthenticated(true)
                 router.push("/");
                 router.refresh();
             } else {
@@ -42,7 +46,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50 dark:bg-[#070707] transition-colors selection:bg-[#00845a]/20 selection:text-[#00845a]">
+        <div className="mx-2 min-h-screen flex flex-col gap-8 items-center justify-center relative overflow-hidden bg-slate-50 dark:bg-[#070707] transition-colors selection:bg-[#00845a]/20 selection:text-[#00845a]">
             {/* Rich Background mimicking the reference's atmospheric landscape feel */}
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#00845a]/10 dark:bg-[#00845a]/20 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen"></div>
@@ -109,15 +113,14 @@ export default function LoginPage() {
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        disabled={loading}
-                        className="w-full bg-transparent border-2 border-slate-800 dark:border-white text-slate-800 dark:text-white hover:bg-slate-800 dark:hover:bg-white hover:text-white dark:hover:text-black font-black text-sm uppercase tracking-widest py-4 rounded-2xl transition-all disabled:opacity-50 active:scale-95 mt-6 shadow-sm hover:shadow-lg"
+                        disabled={loading || !username || !password}
+                        className="w-full bg-transparent border-2 border-slate-800 dark:border-white text-slate-800 dark:text-white hover:bg-slate-800 dark:hover:bg-white hover:text-white dark:hover:text-black font-black text-sm uppercase tracking-widest py-4 rounded-2xl transition-all disabled:opacity-50 active:scale-95 mt-6 shadow-sm hover:shadow-lg cursor-pointer disabled:cursor-not-allowed"
                     >
-                        {loading ? "Authenticating..." : "Login"}
+                        {isAuthenticated ? "Authenticated" : loading ? "Authenticating..." : "Login" }
                     </button>
-
-
                 </form>
             </div>
+            <p className=" opacity-30">version: {packageJson.version} </p>
         </div>
     );
 }

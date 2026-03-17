@@ -83,7 +83,8 @@ export default function Dashboard() {
           trendColor="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10"
           value={stats?.total || "0"}
           label="Total Resumes Scanned"
-          trend="+12% increase"
+          // trend="+12% increase"
+          trend="total resumes"
         />
         <KPICard
           icon={<FiCheckCircle className="text-blue-600 dark:text-blue-400" />}
@@ -160,13 +161,13 @@ function KPICard({ icon, iconBg, value, label, trend, trendColor }) {
         >
           {trend}
         </span>
-        <Link
+        {/* <Link
           href="#"
           className="flex items-center gap-1 text-[10px] font-bold text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors group/link"
         >
           View list{" "}
           <FiArrowRight className="group-hover/link:translate-x-0.5 transition-transform" />
-        </Link>
+        </Link> */}
       </div>      
     </div>
   );
