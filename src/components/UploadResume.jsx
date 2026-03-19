@@ -6,8 +6,7 @@ import { toast } from "react-toastify";
 import ReviewMetadata from "./ReviewMetadata";
 import { FiFile, FiLoader, FiZap } from "react-icons/fi";
 
-export default function UploadResume({ aiOnline = true }) {
-    const [file, setFile] = useState(null);
+export default function UploadResume({file, setFile}) {
     const [dragActive, setDragActive] = useState(false);
     const [analyzing, setAnalyzing] = useState(false);
     const [metadata, setMetadata] = useState(null);
@@ -23,36 +22,7 @@ export default function UploadResume({ aiOnline = true }) {
             return;
         }
         setFile(selected);
-        handleAnalyze(selected);
-    };
-
-    const handleAnalyze = async (selectedFile) => {
-        if (!aiOnline) {
-            toast.info("AI Infrastructure Offline - Opening manual form");
-            setMetadata({ candidate_name: "", email: "", job_title: "", location: "", experience_years: "", visa_status: "", specialization: "" });
-            return;
-        }
-
-        setAnalyzing(true);
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-        try {
-            const res = await fetch("/api/analyze", { method: "POST", body: formData });
-            const data = await res.json();
-            if (data.success) {
-                toast.success("AI extraction complete!");
-                setMetadata(data.metadata);
-            } else {
-                const isQuotaError = res.status === 429;
-                toast.info(isQuotaError ? "AI busy - manual entry enabled." : "Analysis paused - manual entry enabled.");
-                setMetadata({ candidate_name: "", email: "", job_title: "", location: "", experience_years: "", visa_status: "", specialization: "" });
-            }
-        } catch (error) {
-            toast.warn("Switching to manual entry.");
-            setMetadata({ candidate_name: "" });
-        } finally {
-            setAnalyzing(false);
-        }
+        setMetadata({ candidate_name: "", email: "", job_title: "", location: "", experience_years: "", visa_status: "", specialization: "" });
     };
 
     const handleFinalSubmit = async (verifiedData) => {
@@ -119,36 +89,15 @@ export default function UploadResume({ aiOnline = true }) {
                     </div>
                 ) : (
                     <div className="flex flex-col items-center gap-8 relative z-10 text-center">
-                        <div className={`p-8 rounded-[2rem] transition-all duration-500 ${dragActive ? "bg-[#00845a] dark:bg-[#00b37a] text-white scale-110 rotate-12 shadow-xl shadow-[#00845a]/30" : "bg-white dark:bg-[#1a1a1a] text-slate-300 dark:text-gray-600 shadow-sm border border-slate-100 dark:border-white/5 group-hover:bg-[#00845a]/5 dark:group-hover:bg-[#00b37a]/10 group-hover:text-[#00845a] dark:group-hover:text-[#00b37a]"}`}>
-                            <CloudUploadIcon className="text-6xl" />
+                        <div className={`p-4 rounded-[2rem] transition-all duration-500 ${dragActive ? "bg-[#00845a] dark:bg-[#00b37a] text-white scale-110 rotate-12 shadow-xl shadow-[#00845a]/30" : "bg-white dark:bg-[#1a1a1a] text-slate-300 dark:text-gray-600 shadow-sm border border-slate-100 dark:border-white/5 group-hover:bg-[#00845a]/5 dark:group-hover:bg-[#00b37a]/10 group-hover:text-[#00845a] dark:group-hover:text-[#00b37a]"}`}>
+                            <CloudUploadIcon className="text-3xl" />
                         </div>
 
                         <div className="space-y-3 px-4">
-                            <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors">
-                                {file ? `Ready: ${file.name}` : (aiOnline ? "Portal Ingestion Zone" : "Manual Ingestion Zone")}
-                            </h3>
                             <p className="text-xs md:text-sm font-medium text-slate-500 dark:text-gray-400 max-w-xs mx-auto leading-relaxed transition-colors">
-                                {file ? (aiOnline ? "Verifying file structure for AI sync..." : "Extracting file details...") : (aiOnline ? "Drag and drop your identity document here or browse local storage." : "AI disconnected. Drag a file here to ingest via manual entry.")}
+                                {!file &&  "Drag and drop your identity document here or browse local storage."}
                             </p>
                         </div>
-
-                        {!file && (
-                            <button className="bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 dark:text-gray-400 hover:border-[#00845a] dark:hover:border-[#00b37a] hover:text-[#00845a] dark:hover:text-[#00b37a] transition-all shadow-sm active:scale-95">
-                                Select File
-                            </button>
-                        )}
-
-                        {file && (
-                            <div className="flex flex-col items-center gap-3">
-                                <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-[#00b37a]/10 text-[#00845a] dark:text-[#00b37a] rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100 dark:border-[#00b37a]/20 transition-colors">
-                                    <span className="w-1.5 h-1.5 bg-[#00845a] dark:bg-[#00b37a] rounded-full animate-pulse transition-colors"></span>
-                                    Integrity Check Passed
-                                </div>
-                                <button onClick={(e) => { e.stopPropagation(); resetUpload(); }} className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest hover:text-rose-500 dark:hover:text-rose-400 transition-colors">
-                                    Cancel and Retry
-                                </button>
-                            </div>
-                        )}
                     </div>
                 )}
 

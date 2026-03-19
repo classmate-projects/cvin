@@ -62,7 +62,7 @@ export default async function RootLayout({ children }) {
                   </div>
                 </header>
 
-                <div className="flex-1 overflow-y-auto scrollbar-hide px-4 py-6 md:px-8 md:py-8 bg-[#f8fafc] dark:bg-[#0a0a0a] transition-colors duration-300">
+                <div className="flex-1 overflow-y-auto scrollbar-hide px-4 md:px-8 bg-[#f8fafc] dark:bg-[#0a0a0a] transition-colors duration-300 justify-center items-center  ">
                   {children}
                 </div>
 
