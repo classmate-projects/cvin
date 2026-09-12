@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
@@ -25,8 +25,6 @@ import {
 
 export default function Sidebar() {
     const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const service = searchParams.get("service");
     const [isOpen, setIsOpen] = useState(false);
 
     const isActive = (path) => pathname === path;
@@ -162,8 +160,8 @@ export default function Sidebar() {
                             <SidebarItem
                                 icon={<FiBarChart2 />}
                                 label="Reports"
-                                href="/maintenance?service=Reports"
-                                active={isActive("/maintenance") && service === "Reports"}
+                                href="/reports"
+                                active={isActive("/reports")}
                             />
                         </div>
                     </div>

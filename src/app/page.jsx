@@ -14,8 +14,21 @@ import {
     FiCalendar,
     FiPlus,
     FiShare2,
-    FiMoreVertical
+    FiMoreVertical,
+    FiSearch,
+    FiUploadCloud,
+    FiUsers,
+    FiUserPlus,
+    FiActivity,
+    FiPieChart,
+    FiBarChart2
 } from "react-icons/fi";
+import {
+    BarListWidget,
+    DonutWidget,
+    TrendChartWidget,
+    PipelineWidget
+} from "@/components/StatWidgets";
 
 export default function Dashboard() {
     const [stats, setStats] = useState(null);
@@ -98,6 +111,45 @@ export default function Dashboard() {
                 />
             </div>
 
+            {/* Quick Actions */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <QuickAction href="/upload" icon={<FiUploadCloud />} label="Upload New" />
+                <QuickAction href="/find-resume" icon={<FiSearch />} label="Find Resume" />
+                <QuickAction href="/talent-pool" icon={<FiUsers />} label="Talent Pool" />
+                <QuickAction href="/invite-team" icon={<FiUserPlus />} label="Invite Team" />
+            </div>
+
+            {/* Widgets Grid: Trend + Pipeline */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <TrendChartWidget
+                    title="7-Day Intake Trend"
+                    icon={<FiTrendingUp />}
+                    items={stats?.weeklyTrend || []}
+                    className="lg:col-span-2"
+                />
+                <PipelineWidget
+                    title="Review Pipeline"
+                    icon={<FiActivity />}
+                    statusCounts={stats?.statusCounts || {}}
+                />
+            </div>
+
+            {/* Widgets Grid: Categories + Formats */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <BarListWidget
+                    title="Top Job Categories"
+                    icon={<FiBarChart2 />}
+                    items={(stats?.categories || []).slice(0, 5).map((c) => ({ label: c.job_title, count: c.count }))}
+                    emptyLabel="No job categories detected yet"
+                />
+                <DonutWidget
+                    title="File Format Mix"
+                    icon={<FiPieChart />}
+                    items={(stats?.formats || []).map((f) => ({ label: f.file_type || "Unknown", count: f.count }))}
+                    emptyLabel="No files processed yet"
+                />
+            </div>
+
             {/* Centerpiece Content: Data Visualization and Talent Activity */}
             <div className="w-full">
                 {/* Talent History Area */}
@@ -117,6 +169,20 @@ export default function Dashboard() {
                 </div>
             </div>
         </div>
+    );
+}
+
+function QuickAction({ href, icon, label }) {
+    return (
+        <Link
+            href={href}
+            className="card-glass p-5 flex items-center gap-3 group hover:border-[#00845a]/30 dark:hover:border-[#00b37a]/30"
+        >
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-[#00845a] dark:text-[#00b37a] flex items-center justify-center text-lg group-hover:scale-110 transition-transform shrink-0">
+                {icon}
+            </div>
+            <span className="text-xs font-black text-slate-700 dark:text-gray-200 uppercase tracking-wide">{label}</span>
+        </Link>
     );
 }
 
